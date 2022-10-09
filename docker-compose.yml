@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  server:
+    restart: always
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./server:/code
+    ports:
+      - '8000:80'
+  
