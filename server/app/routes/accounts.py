@@ -9,7 +9,12 @@ router = APIRouter(
 )
 
 
-@router.post('/', status_code=201)
+@router.post('/', status_code=201, response_model=schemas.Account)
 def create_account(account: schemas.AccountCreate):
     db_account = AccountStorage.create_account(account)
     return db_account
+
+
+@router.get('/', response_model=list[schemas.Account])
+def list_all_accounts():
+    return AccountStorage.list_all_accounts()
