@@ -5,10 +5,7 @@ from contextvars import ContextVar
 from app.config import Config
 
 
-engine = create_engine(
-    Config.SQLALCHEMY_DATABASE_URI,
-    connect_args={'check_same_thread': Config.CHECK_SAME_THREAD}
-)
+engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 
 session_factory = sessionmaker(bind=engine)
 session_var: ContextVar = ContextVar('db_session')
