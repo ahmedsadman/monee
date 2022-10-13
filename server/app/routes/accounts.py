@@ -1,7 +1,7 @@
 from fastapi import APIRouter
+
 from app import schemas
 from app.storage import AccountStorage
-
 
 router = APIRouter(
     prefix='/accounts',

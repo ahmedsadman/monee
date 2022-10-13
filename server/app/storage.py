@@ -1,7 +1,7 @@
-from app import schemas
-from app.db import session
-from app import models
 from sqlalchemy.future import select
+
+from app import models, schemas
+from app.db import session
 
 
 class AccountStorage:

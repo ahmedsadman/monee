@@ -1,6 +1,9 @@
-from sqlalchemy import Column, String, Integer, Enum as EnumColumn
-from app.enums import BankIdentifier
+from sqlalchemy import Column
+from sqlalchemy import Enum as EnumColumn
+from sqlalchemy import Integer, String
+
 from app.db import Base
+from app.enums import BankIdentifier
 
 
 class Account(Base):

@@ -1,7 +1,8 @@
-from fastapi import FastAPI, Response, Request
+from fastapi import FastAPI, Request, Response
 from sqlalchemy.exc import DBAPIError
-from app.db import session_factory, session_var, engine
+
 from app import models
+from app.db import engine, session_factory, session_var
 from app.routes import accounts
 
 app = FastAPI()
@@ -24,7 +25,7 @@ async def startup():
 @app.middleware("http")
 async def db_session_middleware(request: Request, call_next):
     response = Response("Internal server error", status_code=500)
-    async with session_factory() as session:
+    async with session_factory() as session:  # type: ignore
         session_var.set(session)
         response = await call_next(request)
         try:
