@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.future import select
 
 from app import models, schemas
@@ -18,3 +19,12 @@ class AccountStorage:
         statement = select(models.Account)
         accounts = await session().scalars(statement)
         return accounts.all()
+
+    @staticmethod
+    async def get_by_id(id: int) -> models.Account:
+        account = await session().get(models.Account, id)
+
+        if not account:
+            raise HTTPException(status_code=404, detail="Account not found")
+
+        return account

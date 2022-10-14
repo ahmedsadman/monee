@@ -1,5 +1,6 @@
 import asyncio
 from pathlib import Path
+from pprint import pprint
 
 from fastapi import APIRouter, UploadFile
 
@@ -27,11 +28,11 @@ async def list_all_accounts():
 @router.post('/{account_id}/upload-statement')
 async def upload_statement(account_id: int, file: UploadFile):
     saved_file: Path = await utils.save_upload_file_temp(file)
-    from pprint import pprint
+    db_account = await AccountStorage.get_by_id(account_id)
+    account = schemas.Account.from_orm(db_account)
 
     try:
-        # process the transactions
-        parser = get_parser('abbank', saved_file.resolve())
+        parser = get_parser(account.bank_identifier, saved_file.resolve())
         transactions = await asyncio.to_thread(parser.get_transactions)
         pprint(transactions)
     except Exception as e:
