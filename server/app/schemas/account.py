@@ -1,12 +1,10 @@
 from pydantic import BaseModel
 
-from app.enums import BankIdentifier
-
 
 class AccountBase(BaseModel):
     title: str
     account_no: str
-    bank_identifier: BankIdentifier
+    bank_identifier: str
 
 
 class AccountCreate(AccountBase):
