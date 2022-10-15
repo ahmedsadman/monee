@@ -2,6 +2,7 @@ import hashlib
 from datetime import date
 
 from fastapi import HTTPException
+from sqlalchemy import func
 from sqlalchemy.future import select
 
 from app import models, schemas
@@ -70,4 +71,26 @@ class TransactionStorage:
 
         statement = select(models.Transaction).where(*query_filters)
         results = await session().scalars(statement)
+        return results.all()
+
+    @staticmethod
+    async def get_statistics(start_date: date | None, end_date: date | None) -> list:
+        query_filters = []
+
+        if start_date:
+            query_filters.append(models.Transaction.date >= start_date)
+
+        if end_date:
+            query_filters.append(models.Transaction.date <= end_date)
+
+        statement = select(func.sum(models.Transaction.amount), func.count(models.Transaction.amount)) \
+                    .group_by(models.Transaction.type) \
+                    .where(*query_filters)
+
+        # session.execute returns all columns
+        # session.execute can be used for ORM instances, but need to add some more code to get the instance column.
+        # session.scalar returns a single column, the column value being the ORM instance
+        # session.scalar is useful when selecting only ORM entities. It's a convenient version of session.execute
+        # session.execute is required when we're dealing with non-ORM instances, like here we're using aggregate functions
+        results = await session().execute(statement)
         return results.all()
