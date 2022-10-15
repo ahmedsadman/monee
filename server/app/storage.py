@@ -2,7 +2,7 @@ import hashlib
 from datetime import date
 
 from fastapi import HTTPException
-from sqlalchemy import func
+from sqlalchemy import func, desc
 from sqlalchemy.future import select
 
 from app import models, schemas
@@ -60,7 +60,7 @@ class TransactionStorage:
         return hashlib.md5(str_to_hash.encode('utf-8')).hexdigest()
 
     @staticmethod
-    async def search_transactions(start_date: date | None, end_date: date | None) -> list[models.Transaction]:
+    async def search_transactions(start_date: date | None, end_date: date | None, description: str | None) -> list[models.Transaction]:
         query_filters = []
 
         if start_date:
@@ -68,6 +68,9 @@ class TransactionStorage:
 
         if end_date:
             query_filters.append(models.Transaction.date <= end_date)
+
+        if description:
+            query_filters.append(models.Transaction.description == description)
 
         statement = select(models.Transaction).where(*query_filters)
         results = await session().scalars(statement)
@@ -83,8 +86,13 @@ class TransactionStorage:
         if end_date:
             query_filters.append(models.Transaction.date <= end_date)
 
-        statement = select(func.sum(models.Transaction.amount), func.count(models.Transaction.amount)) \
+        stmt_simple = select(func.sum(models.Transaction.amount), func.count(models.Transaction.amount)) \
                     .group_by(models.Transaction.type) \
+                    .where(*query_filters)
+
+        stmt_group = select(models.Transaction.description, func.sum(models.Transaction.amount), func.count(models.Transaction.amount)) \
+                    .group_by(models.Transaction.description) \
+                    .order_by(desc(func.sum(models.Transaction.amount))) \
                     .where(*query_filters)
 
         # session.execute returns all columns
@@ -92,5 +100,6 @@ class TransactionStorage:
         # session.scalar returns a single column, the column value being the ORM instance
         # session.scalar is useful when selecting only ORM entities. It's a convenient version of session.execute
         # session.execute is required when we're dealing with non-ORM instances, like here we're using aggregate functions
-        results = await session().execute(statement)
-        return results.all()
+        results_simple = await session().execute(stmt_simple)
+        results_group = await session().execute(stmt_group)   
+        return [results_simple.all(), results_group.all()]
