@@ -1,3 +1,5 @@
+import hashlib
+
 from fastapi import HTTPException
 from sqlalchemy.future import select
 
@@ -28,3 +30,16 @@ class AccountStorage:
             raise HTTPException(status_code=404, detail="Account not found")
 
         return account
+
+
+class TransactionStorage:
+    @staticmethod
+    async def add_transactions(transactions: list[schemas.TransactionCreate]):
+        db_transactions = [models.Transaction(**transaction.dict()) for transaction in transactions]
+        session().add_all(db_transactions)
+
+    @staticmethod
+    def calculate_transaction_uid(t: schemas.ParsedTransaction, account_id: int) -> str:
+        # calcualte an unique id for transaction
+        str_to_hash = f'{account_id}-{t.date}-{t.amount}-{t.type}-{t.balance}-{t.description}'
+        return hashlib.md5(str_to_hash.encode('utf-8')).hexdigest()

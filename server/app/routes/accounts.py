@@ -6,7 +6,7 @@ from fastapi import APIRouter, UploadFile
 
 from app import schemas, utils
 from app.statement_parser.parser import get_parser
-from app.storage import AccountStorage
+from app.storage import AccountStorage, TransactionStorage
 
 router = APIRouter(
     prefix='/accounts',
@@ -33,8 +33,12 @@ async def upload_statement(account_id: int, file: UploadFile):
 
     try:
         parser = get_parser(account.bank_identifier, saved_file.resolve())
-        transactions = await asyncio.to_thread(parser.get_transactions)
-        pprint(transactions)
+        parsed_transactions: list[schemas.ParsedTransaction] = await asyncio.to_thread(parser.get_transactions)
+        transactions: list[schemas.TransactionCreate] = [schemas.TransactionCreate(**transaction.dict(), 
+                        uid=TransactionStorage.calculate_transaction_uid(transaction, account_id), account_id=account_id)
+                        for transaction in parsed_transactions
+                    ]
+        await TransactionStorage.add_transactions(transactions)
     except Exception as e:
         print(e)
         return {'message': 'An error occured'}
