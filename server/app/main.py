@@ -3,11 +3,12 @@ from sqlalchemy.exc import DBAPIError
 
 from app import models
 from app.db import engine, session_factory, session_var
-from app.routes import accounts
+from app.routes import accounts, transactions
 
 app = FastAPI()
 
 app.include_router(accounts.router)
+app.include_router(transactions.router)
 
 
 # TODO: Cleanup once Alembic migration is configured

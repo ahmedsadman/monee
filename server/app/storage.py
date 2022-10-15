@@ -1,4 +1,5 @@
 import hashlib
+from datetime import date
 
 from fastapi import HTTPException
 from sqlalchemy.future import select
@@ -56,3 +57,17 @@ class TransactionStorage:
     def calculate_transaction_uid(t: schemas.ParsedTransaction | schemas.TransactionCreate, account_id: int) -> str:
         str_to_hash = f'{account_id}-{t.date}-{t.amount}-{t.type}-{t.balance}-{t.description}'
         return hashlib.md5(str_to_hash.encode('utf-8')).hexdigest()
+
+    @staticmethod
+    async def search_transactions(start_date: date | None, end_date: date | None) -> list[models.Transaction]:
+        query_filters = []
+
+        if start_date:
+            query_filters.append(models.Transaction.date >= start_date)
+
+        if end_date:
+            query_filters.append(models.Transaction.date <= end_date)
+
+        statement = select(models.Transaction).where(*query_filters)
+        results = await session().scalars(statement)
+        return results.all()
