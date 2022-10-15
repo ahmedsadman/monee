@@ -2,7 +2,7 @@ import hashlib
 from datetime import date
 
 from fastapi import HTTPException
-from sqlalchemy import func, desc
+from sqlalchemy import desc, func
 from sqlalchemy.future import select
 
 from app import models, schemas
@@ -90,8 +90,9 @@ class TransactionStorage:
                     .group_by(models.Transaction.type) \
                     .where(*query_filters)
 
-        stmt_group = select(models.Transaction.description, func.sum(models.Transaction.amount), func.count(models.Transaction.amount)) \
-                    .group_by(models.Transaction.description) \
+        stmt_group = select(models.Transaction.description, models.Transaction.type,
+                            func.sum(models.Transaction.amount), func.count(models.Transaction.amount)) \
+                    .group_by(models.Transaction.description, models.Transaction.type) \
                     .order_by(desc(func.sum(models.Transaction.amount))) \
                     .where(*query_filters)
 

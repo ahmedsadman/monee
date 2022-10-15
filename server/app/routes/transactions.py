@@ -1,10 +1,10 @@
 from datetime import date
-from typing import Any, Dict
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from app import schemas
+from app.enums import TransactionType
 from app.storage import TransactionStorage
 
 
@@ -14,6 +14,7 @@ class SumAndCount(BaseModel):
 
 class TotalWithGroup(SumAndCount):
     description: str
+    type: TransactionType
 
 class Statistics(BaseModel):
     withdraw: SumAndCount
