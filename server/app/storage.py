@@ -60,7 +60,11 @@ class TransactionStorage:
         return hashlib.md5(str_to_hash.encode('utf-8')).hexdigest()
 
     @staticmethod
-    async def search_transactions(start_date: date | None, end_date: date | None, description: str | None) -> list[models.Transaction]:
+    async def search_transactions(
+            start_date: date | None,
+            end_date: date | None,
+            description: str | None
+            ) -> list[models.Transaction]:
         query_filters = []
 
         if start_date:
@@ -87,20 +91,21 @@ class TransactionStorage:
             query_filters.append(models.Transaction.date <= end_date)
 
         stmt_simple = select(func.sum(models.Transaction.amount), func.count(models.Transaction.amount)) \
-                    .group_by(models.Transaction.type) \
-                    .where(*query_filters)
+            .group_by(models.Transaction.type) \
+            .where(*query_filters)
 
         stmt_group = select(models.Transaction.description, models.Transaction.type,
                             func.sum(models.Transaction.amount), func.count(models.Transaction.amount)) \
-                    .group_by(models.Transaction.description, models.Transaction.type) \
-                    .order_by(desc(func.sum(models.Transaction.amount))) \
-                    .where(*query_filters)
+            .group_by(models.Transaction.description, models.Transaction.type) \
+            .order_by(desc(func.sum(models.Transaction.amount))) \
+            .where(*query_filters)
 
         # session.execute returns all columns
         # session.execute can be used for ORM instances, but need to add some more code to get the instance column.
         # session.scalar returns a single column, the column value being the ORM instance
         # session.scalar is useful when selecting only ORM entities. It's a convenient version of session.execute
-        # session.execute is required when we're dealing with non-ORM instances, like here we're using aggregate functions
+        # session.execute is required when we're dealing with non-ORM instances,
+        # like here we're using aggregate functions
         results_simple = await session().execute(stmt_simple)
-        results_group = await session().execute(stmt_group)   
+        results_group = await session().execute(stmt_group)
         return [results_simple.all(), results_group.all()]

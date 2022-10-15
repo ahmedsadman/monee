@@ -33,9 +33,13 @@ async def upload_statement(account_id: int, file: UploadFile):
     try:
         parser = get_parser(account.bank_identifier, saved_file.resolve())
         parsed_transactions: list[schemas.ParsedTransaction] = await asyncio.to_thread(parser.get_transactions)
-        transactions: list[schemas.TransactionCreate] = [schemas.TransactionCreate(**transaction.dict(), 
-                        uid=TransactionStorage.calculate_transaction_uid(transaction, account_id), account_id=account_id)
-                        for transaction in parsed_transactions
+        transactions: list[schemas.TransactionCreate] = [
+                            schemas.TransactionCreate(
+                                **transaction.dict(),
+                                uid=TransactionStorage
+                                .calculate_transaction_uid(transaction, account_id), account_id=account_id
+                            )
+                            for transaction in parsed_transactions
                     ]
         await TransactionStorage.add_transactions(transactions)
     except Exception as e:

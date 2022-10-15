@@ -12,9 +12,11 @@ class SumAndCount(BaseModel):
     sum: float = 0
     count: int = 0
 
+
 class TotalWithGroup(SumAndCount):
     description: str
     type: TransactionType
+
 
 class Statistics(BaseModel):
     withdraw: SumAndCount
@@ -29,7 +31,11 @@ router = APIRouter(
 
 
 @router.get('/search', response_model=list[schemas.Transaction])
-async def search_transactions(start_date: date | None = None, end_date: date | None = None, description: str | None = None):
+async def search_transactions(
+        start_date: date | None = None,
+        end_date: date | None = None,
+        description: str | None = None
+        ):
     if start_date and end_date and start_date > end_date:
         raise HTTPException(status_code=400, detail='Start date cannot be greater than end date')
     return await TransactionStorage.search_transactions(start_date, end_date, description)
@@ -41,7 +47,6 @@ async def get_statistics(start_date: date | None = None, end_date: date | None =
         raise HTTPException(status_code=400, detail='Start date cannot be greater than end date')
 
     db_stats_simple, db_stats_group = await TransactionStorage.get_statistics(start_date, end_date)
-
 
     return {
         'withdraw': db_stats_simple[0] if len(db_stats_simple) > 0 else dict(),

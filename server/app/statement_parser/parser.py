@@ -13,13 +13,13 @@ class BaseParser:
     def __init__(self, file_path: str, config: ParserConfig):
         self.file_path = file_path
         self.config = config
-    
+
     def _read_statement(self, temp_filename):
         lines = None
         with open(self.file_path, 'r') as f:
             lines = f.readlines()
         parsed_lines = [lines[self.config.header_lindex]]
-        parsed_lines += lines[self.config.transaction_start_lindex : len(lines) - self.config.transaction_end_offset]
+        parsed_lines += lines[self.config.transaction_start_lindex:len(lines) - self.config.transaction_end_offset]
 
         with open(temp_filename, 'w') as f:
             f.writelines(parsed_lines)
@@ -42,17 +42,19 @@ class BaseParser:
 
         with open(str_path, 'w') as f:
             self._read_statement(str_path)
-    
+
             with open(str_path, 'r') as f:
                 reader = csv.DictReader(f)
                 for row in reader:
                     date = datetime.strptime(self.sanitize(row[self.config.date_colname]), self.config.date_parser)
-                    type = TransactionType.WITHDRAW if row[self.config.withdraw_colname] not in ('-', '') else TransactionType.DEPOSIT
-                    amount = row[self.config.withdraw_colname] if type == TransactionType.WITHDRAW else row[self.config.deposit_colname]
-                    
+                    type = TransactionType.WITHDRAW \
+                        if row[self.config.withdraw_colname] not in ('-', '') else TransactionType.DEPOSIT
+                    amount = row[self.config.withdraw_colname] \
+                        if type == TransactionType.WITHDRAW else row[self.config.deposit_colname]
+
                     transactions.append(
                         schemas.ParsedTransaction(
-                            date=date, 
+                            date=date,
                             description=row[self.config.desc_colname],
                             type=type,
                             amount=float(self.sanitize_amount(amount)),
@@ -66,6 +68,6 @@ class BaseParser:
 
 
 def get_parser(bank_identifier: str, filepath) -> BaseParser:
-    if not bank_identifier in parser_configs:
+    if bank_identifier not in parser_configs:
         raise
     return BaseParser(filepath, parser_configs[bank_identifier])
