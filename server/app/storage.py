@@ -35,11 +35,24 @@ class AccountStorage:
 class TransactionStorage:
     @staticmethod
     async def add_transactions(transactions: list[schemas.TransactionCreate]):
-        db_transactions = [models.Transaction(**transaction.dict()) for transaction in transactions]
+        to_add = []
+
+        for transaction in transactions:
+            calculated_uid = TransactionStorage.calculate_transaction_uid(transaction, transaction.account_id)
+            if not await TransactionStorage.transaction_exists(calculated_uid):
+                to_add.append(transaction)
+
+        db_transactions = [models.Transaction(**transaction.dict()) for transaction in to_add]
         session().add_all(db_transactions)
 
     @staticmethod
-    def calculate_transaction_uid(t: schemas.ParsedTransaction, account_id: int) -> str:
-        # calcualte an unique id for transaction
+    async def transaction_exists(uid: str):
+        statement = select(models.Transaction).where(models.Transaction.uid == uid)
+        result = await session().scalars(statement)
+        return result.first() is not None
+
+    # TODO: This is not storage related function, move to someplace else
+    @staticmethod
+    def calculate_transaction_uid(t: schemas.ParsedTransaction | schemas.TransactionCreate, account_id: int) -> str:
         str_to_hash = f'{account_id}-{t.date}-{t.amount}-{t.type}-{t.balance}-{t.description}'
         return hashlib.md5(str_to_hash.encode('utf-8')).hexdigest()
