@@ -1,5 +1,4 @@
-from sqlalchemy import (Column, DateTime, Enum, Float, ForeignKey, Integer,
-                        String)
+from sqlalchemy import Column, Date, Enum, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from app.db import Base
@@ -25,7 +24,7 @@ class Transaction(Base):
     uid = Column(String(60), nullable=False, index=True, unique=True)
     description = Column(String(200), nullable=True)
     amount = Column(Float, nullable=False)
-    date = Column(DateTime, nullable=False, index=True)
+    date = Column(Date, nullable=False, index=True)
     type = Column(Enum(TransactionType), nullable=False, index=True)
     balance = Column(Float, nullable=False)
 

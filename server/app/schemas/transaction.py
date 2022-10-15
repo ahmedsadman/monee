@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 
 from pydantic import BaseModel, validator
 
@@ -8,7 +8,7 @@ from app.enums import TransactionType
 class TransactionBase(BaseModel):
     description: str
     amount: float
-    date: datetime
+    date: date
     type: TransactionType
     balance: float
 

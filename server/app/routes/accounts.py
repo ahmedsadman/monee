@@ -1,6 +1,5 @@
 import asyncio
 from pathlib import Path
-from pprint import pprint
 
 from fastapi import APIRouter, UploadFile
 
