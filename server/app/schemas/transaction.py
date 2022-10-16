@@ -12,11 +12,6 @@ class TransactionBase(BaseModel):
     type: TransactionType
     balance: float
 
-    @validator('description')
-    def truncate_description(cls, v):
-        # limit character to make it valid for db field
-        return v[:199]
-
 
 class ParsedTransaction(TransactionBase):
     pass
@@ -26,9 +21,42 @@ class TransactionCreate(ParsedTransaction):
     uid: str
     account_id: int
 
+    @validator('description')
+    def truncate_description(cls, v):
+        x = ' '.join(v.split())
+        return x[:199]
+
+    @validator('amount')
+    def round_amount(cls, v):
+        return round(v, 2)
+
+    @validator('balance')
+    def round_balance(cls, v):
+        return round(v, 2)
+
 
 class Transaction(TransactionCreate):
     id: int
 
     class Config:
         orm_mode = True
+
+
+class SumAndCount(BaseModel):
+    sum: float = 0
+    count: int = 0
+
+    @validator('sum')
+    def round_sum(cls, v):
+        return round(v, 2)
+
+
+class TotalWithGroup(SumAndCount):
+    description: str
+    type: TransactionType
+
+
+class Statistics(BaseModel):
+    withdraw: SumAndCount
+    deposit: SumAndCount
+    grouped: list[TotalWithGroup]

@@ -1,28 +1,9 @@
 from datetime import date
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
 
 from app import schemas
-from app.enums import TransactionType
 from app.storage import TransactionStorage
-
-
-class SumAndCount(BaseModel):
-    sum: float = 0
-    count: int = 0
-
-
-class TotalWithGroup(SumAndCount):
-    description: str
-    type: TransactionType
-
-
-class Statistics(BaseModel):
-    withdraw: SumAndCount
-    deposit: SumAndCount
-    grouped: list[TotalWithGroup]
-
 
 router = APIRouter(
     prefix='/transactions',
@@ -41,7 +22,7 @@ async def search_transactions(
     return await TransactionStorage.search_transactions(start_date, end_date, description)
 
 
-@router.get('/statistics', response_model=Statistics)
+@router.get('/statistics', response_model=schemas.Statistics)
 async def get_statistics(start_date: date | None = None, end_date: date | None = None):
     if start_date and end_date and start_date > end_date:
         raise HTTPException(status_code=400, detail='Start date cannot be greater than end date')
