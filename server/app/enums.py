@@ -2,5 +2,5 @@ from enum import Enum
 
 
 class TransactionType(str, Enum):
-    WITHDRAW = 'widthdraw'
+    WITHDRAW = 'withdraw'
     DEPOSIT = 'deposit'
