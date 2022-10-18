@@ -84,14 +84,8 @@ class TransactionStorage:
         if end_date:
             query_filters.append(models.Transaction.date <= end_date)
 
-        stmt_simple = select(func.sum(models.Transaction.amount), func.count(models.Transaction.amount)) \
+        stmt = select(func.sum(models.Transaction.amount), func.count(models.Transaction.amount)) \
             .group_by(models.Transaction.type) \
-            .where(*query_filters)
-
-        stmt_group = select(models.Transaction.description, models.Transaction.type,
-                            func.sum(models.Transaction.amount), func.count(models.Transaction.amount)) \
-            .group_by(models.Transaction.description, models.Transaction.type) \
-            .order_by(desc(func.sum(models.Transaction.amount))) \
             .where(*query_filters)
 
         # session.execute returns all columns
@@ -100,6 +94,26 @@ class TransactionStorage:
         # session.scalar is useful when selecting only ORM entities. It's a convenient version of session.execute
         # session.execute is required when we're dealing with non-ORM instances,
         # like here we're using aggregate functions
-        results_simple = await session().execute(stmt_simple)
-        results_group = await session().execute(stmt_group)
-        return [results_simple.all(), results_group.all()]
+        results = await session().execute(stmt)
+        return results.all()
+
+    @staticmethod
+    async def get_grouped_by_desciption(start_date: date | None, end_date: date | None) -> list:
+        query_filters = []
+
+        if start_date:
+            query_filters.append(models.Transaction.date >= start_date)
+
+        if end_date:
+            query_filters.append(models.Transaction.date <= end_date)
+
+        stmt = select(
+                    models.Transaction.description, models.Transaction.type,
+                    func.sum(models.Transaction.amount), func.count(models.Transaction.amount)
+                ) \
+            .group_by(models.Transaction.description, models.Transaction.type) \
+            .order_by(desc(func.sum(models.Transaction.amount))) \
+            .where(*query_filters)
+
+        results = await session().execute(stmt)
+        return results.all()

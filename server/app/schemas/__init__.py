@@ -1,3 +1,3 @@
 from .account import Account, AccountCreate
-from .transaction import (ParsedTransaction, Statistics, Transaction,
-                          TransactionCreate)
+from .transaction import (GroupedTransaction, ParsedTransaction, Statistics,
+                          Transaction, TransactionCreate)

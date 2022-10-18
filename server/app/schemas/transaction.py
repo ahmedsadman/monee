@@ -42,7 +42,7 @@ class Transaction(TransactionCreate):
         orm_mode = True
 
 
-class SumAndCount(BaseModel):
+class StatisticsMeta(BaseModel):
     sum: float = 0
     count: int = 0
 
@@ -51,12 +51,11 @@ class SumAndCount(BaseModel):
         return round(v, 2)
 
 
-class TotalWithGroup(SumAndCount):
+class GroupedTransaction(StatisticsMeta):
     description: str
     type: TransactionType
 
 
 class Statistics(BaseModel):
-    withdraw: SumAndCount
-    deposit: SumAndCount
-    grouped: list[TotalWithGroup]
+    withdraw: StatisticsMeta
+    deposit: StatisticsMeta
