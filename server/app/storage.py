@@ -1,4 +1,3 @@
-import hashlib
 from datetime import date
 
 from fastapi import HTTPException
@@ -7,6 +6,7 @@ from sqlalchemy.future import select
 
 from app import models, schemas
 from app.db import session
+from app.utils import calculate_transaction_uid
 
 
 class AccountStorage:
@@ -40,7 +40,7 @@ class TransactionStorage:
         to_add = []
 
         for transaction in transactions:
-            calculated_uid = TransactionStorage.calculate_transaction_uid(transaction, transaction.account_id)
+            calculated_uid = calculate_transaction_uid(transaction, transaction.account_id)
             if not await TransactionStorage.transaction_exists(calculated_uid):
                 to_add.append(transaction)
 
@@ -52,12 +52,6 @@ class TransactionStorage:
         statement = select(models.Transaction).where(models.Transaction.uid == uid)
         result = await session().scalars(statement)
         return result.first() is not None
-
-    # TODO: This is not storage related function, move to someplace else
-    @staticmethod
-    def calculate_transaction_uid(t: schemas.ParsedTransaction | schemas.TransactionCreate, account_id: int) -> str:
-        str_to_hash = f'{account_id}-{t.date}-{t.amount}-{t.type}-{t.balance}-{t.description}'
-        return hashlib.md5(str_to_hash.encode('utf-8')).hexdigest()
 
     @staticmethod
     async def search_transactions(

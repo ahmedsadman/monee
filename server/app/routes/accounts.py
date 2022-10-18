@@ -36,7 +36,7 @@ async def upload_statement(account_id: int, file: UploadFile):
         transactions: list[schemas.TransactionCreate] = [
                             schemas.TransactionCreate(
                                 **transaction.dict(),
-                                uid=TransactionStorage
+                                uid=utils
                                 .calculate_transaction_uid(transaction, account_id), account_id=account_id
                             )
                             for transaction in parsed_transactions
