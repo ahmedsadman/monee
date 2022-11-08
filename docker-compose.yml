@@ -6,10 +6,10 @@ services:
     depends_on:
       - db
     build:
-      context: ./server
+      context: ./monee-api
       dockerfile: Dockerfile.dev
     volumes:
-      - ./server:/code
+      - ./monee-api:/code
     ports:
       - '8000:80'
     environment:
