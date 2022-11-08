@@ -18,6 +18,17 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_HOST=${DB_HOST}
 
+  client:
+    restart: always
+    build:
+      context: ./monee-client
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /code/node_modules
+      - ./monee-client:/code
+    ports:
+      - '3000:3000'
+
   db:
     restart: on-failure
     image: postgres:14-alpine
