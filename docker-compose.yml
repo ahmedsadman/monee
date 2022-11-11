@@ -3,8 +3,8 @@ version: '3.8'
 services:
   api:
     restart: always
-    # depends_on:
-    #   - db
+    depends_on:
+      - db
     build:
       context: ./monee-api
       dockerfile: Dockerfile.dev
