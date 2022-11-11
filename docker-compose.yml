@@ -3,8 +3,8 @@ version: '3.8'
 services:
   api:
     restart: always
-    depends_on:
-      - db
+    # depends_on:
+    #   - db
     build:
       context: ./monee-api
       dockerfile: Dockerfile.dev
@@ -31,16 +31,15 @@ services:
 
   db:
     restart: on-failure
-    image: postgres:14-alpine
+    image: mysql:8.0.31
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql-data:/var/lib/mysql
     environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
     ports:
-      - '5432:5432'
+      - '3306:3306'
 
 volumes:
-  postgres_data:
+  mysql-data:
   

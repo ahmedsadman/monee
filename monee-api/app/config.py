@@ -7,4 +7,4 @@ db_name = os.getenv('DB_NAME')
 
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = f'postgresql+asyncpg://{db_user}:{db_password}@{db_host}:5432/{db_name}'
+    SQLALCHEMY_DATABASE_URI = f'mysql+aiomysql://{db_user}:{db_password}@{db_host}:3306/{db_name}'
