@@ -20,6 +20,7 @@ async def init_models():
 # TODO: Cleanup once Alembic migration is configured
 @app.on_event("startup")
 async def startup():
+    print('ran startup---')
     await init_models()
 
 
