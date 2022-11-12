@@ -1,22 +1,35 @@
 import pytest
 from pathlib import Path
+from alembic.config import Config as AlembicConfig
+from alembic.command import upgrade
 from httpx import AsyncClient
 from app.config import Config
 
-
-# def pytest_configure():
-#     Config.SQLALCHEMY_DATABASE_URI = 'sqlite+aiosqlite:///test_db.db?check_same_thread=false'
-
-
-# def pytest_unconfigure():
-#     remove_db()
+TEST_DB_NAME = 'test_db.db'
+TEST_DB_PATH = Path(f'./{TEST_DB_NAME}')
 
 
-# def remove_db():
-#     test_db_path = Path('./test_db.db')
+def run_migration():
+    print(' -- STARTING MIGRATION -- ')
+    inifile = str(Path('./alembic.ini').resolve())
+    alembic_config = AlembicConfig(inifile)
+    alembic_config.set_main_option('sqlalchemy.url', Config.SQLALCHEMY_DATABASE_URI)
+    upgrade(alembic_config, 'head')
+    print('-- MIGRATION COMPLETE --')
 
-#     if test_db_path.is_file():
-#         test_db_path.unlink()
+
+def pytest_configure():
+    Config.SQLALCHEMY_DATABASE_URI = f'sqlite+aiosqlite:///{TEST_DB_NAME}?check_same_thread=false'
+    run_migration()
+
+
+def pytest_unconfigure():
+    remove_db()
+
+
+def remove_db():
+    if TEST_DB_PATH.is_file():
+        TEST_DB_PATH.unlink()
 
 
 @pytest.fixture(autouse=True)
