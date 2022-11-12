@@ -6,7 +6,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from alembic import context
-from app import db, models
+from app import db, models  # noqa: F401
 from app.config import Config
 
 # this is the Alembic Config object, which provides
