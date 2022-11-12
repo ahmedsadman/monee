@@ -1,27 +1,13 @@
 from fastapi import FastAPI, Request, Response
 from sqlalchemy.exc import DBAPIError
 
-from app import models
-from app.db import engine, session_factory, session_var
+from app.db import session_factory, session_var
 from app.routes import accounts, transactions
 
 app = FastAPI()
 
 app.include_router(accounts.router)
 app.include_router(transactions.router)
-
-
-# TODO: Cleanup once Alembic migration is configured
-async def init_models():
-    async with engine.begin() as conn:
-        await conn.run_sync(models.Base.metadata.create_all)
-
-
-# TODO: Cleanup once Alembic migration is configured
-@app.on_event("startup")
-async def startup():
-    print('ran startup---')
-    await init_models()
 
 
 @app.middleware("http")

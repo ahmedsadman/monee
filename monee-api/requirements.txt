@@ -2,6 +2,7 @@ aiofiles==22.1.0
 aiomysql==0.1.1
 aiopg==1.4.0
 aiosqlite==0.17.0
+alembic==1.8.1
 anyio==3.6.1
 async-generator==1.10
 async-timeout==4.0.2
@@ -26,6 +27,7 @@ idna==3.4
 iniconfig==1.1.1
 itsdangerous==2.1.2
 Jinja2==3.1.2
+Mako==1.2.3
 MarkupSafe==2.1.1
 mccabe==0.7.0
 orjson==3.8.0
