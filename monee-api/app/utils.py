@@ -1,6 +1,8 @@
 import hashlib
 from pathlib import Path
 from tempfile import NamedTemporaryFile
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import DBAPIError
 
 import aiofiles
 from fastapi import UploadFile
@@ -22,3 +24,11 @@ async def save_upload_file_temp(upload_file: UploadFile) -> Path:
 def calculate_transaction_uid(t: schemas.ParsedTransaction | schemas.TransactionCreate, account_id: int) -> str:
     str_to_hash = f'{account_id}-{t.date}-{t.amount}-{t.type}-{t.balance}-{t.description}'
     return hashlib.md5(str_to_hash.encode('utf-8')).hexdigest()
+
+
+async def commit_or_rollback(session: Session):
+    try:
+        await session.commit()
+    except DBAPIError as e:
+        print(e)
+        await session.rollback()

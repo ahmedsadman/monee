@@ -4,6 +4,7 @@ from alembic.config import Config as AlembicConfig
 from alembic.command import upgrade
 from httpx import AsyncClient
 from app.config import Config
+import sqlalchemy as sa
 
 TEST_DB_NAME = 'test_db.db'
 TEST_DB_PATH = Path(f'./{TEST_DB_NAME}')
@@ -32,17 +33,23 @@ def remove_db():
         TEST_DB_PATH.unlink()
 
 
-@pytest.fixture(autouse=True)
-def async_client_setter():
+async def test_db_session():
+    from app.db import session_factory
+    from app import models
+
+    async with session_factory() as session:
+        yield session
+        await session.execute(sa.delete(models.Account))
+        await session.execute(sa.delete(models.Transaction))
+        await session.commit()
+
+
+@pytest.fixture()
+async def async_client():
     from app.main import app
-    from .async_client import async_client_var
+    from app.dependency import db_session
 
-    async_client_var.set(AsyncClient(app=app, base_url="http://test"))
-    yield
+    app.dependency_overrides[db_session] = test_db_session
 
-
-# TODO: For debug only, remove later
-# @pytest.fixture(autouse=True)
-# def log_db_engine_driver():
-#     from app.db import engine
-#     print('engine is', engine.driver)
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        yield ac

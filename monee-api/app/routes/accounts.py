@@ -1,11 +1,13 @@
 import asyncio
 from pathlib import Path
 
-from fastapi import APIRouter, UploadFile
+from fastapi import APIRouter, UploadFile, Depends
+from sqlalchemy.orm import Session
 
 from app import schemas, utils
 from app.statement_parser.parser import get_parser
 from app.storage import AccountStorage, TransactionStorage
+from app.dependency import db_session
 
 router = APIRouter(
     prefix='/accounts',
@@ -14,14 +16,14 @@ router = APIRouter(
 
 
 @router.post('', status_code=201, response_model=schemas.Account)
-async def create_account(account: schemas.AccountCreate):
-    db_account = await AccountStorage.create_account(account)
+async def create_account(account: schemas.AccountCreate, db: Session = Depends(db_session)):
+    db_account = await AccountStorage(db).create_account(account)
     return db_account
 
 
 @router.get('', response_model=list[schemas.Account])
-async def list_all_accounts():
-    return await AccountStorage.list_all_accounts()
+async def list_all_accounts(db: Session = Depends(db_session)):
+    return await AccountStorage(db).list_all_accounts()
 
 
 @router.post('/{account_id}/upload-statement')
