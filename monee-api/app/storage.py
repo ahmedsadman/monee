@@ -59,6 +59,7 @@ class TransactionStorage:
 
         db_transactions = [models.Transaction(**transaction.dict()) for transaction in to_add]
         session().add_all(db_transactions)
+        return db_transactions
 
     @staticmethod
     async def transaction_exists(uid: str):
