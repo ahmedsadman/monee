@@ -44,6 +44,11 @@ def async_client_setter():
 
 @pytest.fixture(autouse=True)
 def db_session():
+    '''
+    Normally, db session will be handled by the HTTP middleware. But, this is required for
+    non-HTTP operations. For example, using AccountStorage to create mock accounts in
+    test db, which doesn't really go through any HTTP middleware
+    '''
     from app.db import session_factory, session_var
 
     new_session = session_factory()
@@ -61,10 +66,3 @@ async def clean_db():
     await session().execute(sa.delete(models.Account))
     await session().execute(sa.delete(models.Transaction))
     await session().commit()
-
-
-# TODO: For debug only, remove later
-# @pytest.fixture(autouse=True)
-# def log_db_engine_driver():
-#     from app.db import engine
-#     print('engine is', engine.driver)

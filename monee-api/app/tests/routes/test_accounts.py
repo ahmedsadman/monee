@@ -18,7 +18,7 @@ async def account():
     acc = await AccountStorage.create_account(schemas.AccountCreate.parse_obj(mock_account_data))
 
     await session().commit()
-    await session().refresh(acc)
+    await session().refresh(acc)  # refresh is important, might throw strange async/threading errors if omitted
     yield acc
 
 
