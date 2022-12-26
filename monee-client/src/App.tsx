@@ -1,8 +1,13 @@
-import { Button } from "@mui/material";
+import { CssBaseline } from "@mui/material";
 import SideDrawer from "./SideDrawer";
 
 function App() {
-  return <SideDrawer />;
+  return (
+    <>
+      <CssBaseline />
+      <SideDrawer />
+    </>
+  );
 }
 
 export default App;
