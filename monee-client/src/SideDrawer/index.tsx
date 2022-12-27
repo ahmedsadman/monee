@@ -30,7 +30,8 @@ const menuItems = [
   },
 ];
 
-function SideDrawer() {
+function SideDrawer(props: SideDrawerProps) {
+  const { onItemClick } = props;
   return (
     <Drawer
       variant="permanent"
@@ -50,6 +51,7 @@ function SideDrawer() {
             name={item.name}
             label={item.label}
             icon={item.icon}
+            handleClick={onItemClick}
           />
         ))}
       </List>
@@ -58,10 +60,10 @@ function SideDrawer() {
 }
 
 function MenuItem(props: MenuItemProps) {
-  const { icon, label } = props;
+  const { icon, label, name, handleClick } = props;
   return (
     <ListItem disablePadding>
-      <ListItemButton>
+      <ListItemButton onClick={() => handleClick(name)}>
         <ListItemIcon>{icon}</ListItemIcon>
         <ListItemText primary={label} />
       </ListItemButton>
@@ -73,6 +75,11 @@ type MenuItemProps = {
   name: string;
   label: string;
   icon: JSX.Element;
+  handleClick: (name: string) => void;
+};
+
+type SideDrawerProps = {
+  onItemClick: (name: string) => void;
 };
 
 export default SideDrawer;
