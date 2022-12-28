@@ -1,10 +1,19 @@
 from fastapi import FastAPI, Request, Response
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import DBAPIError
 
 from app.db import session_factory, session_var
 from app.routes import accounts, transactions
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(accounts.router)
 app.include_router(transactions.router)
