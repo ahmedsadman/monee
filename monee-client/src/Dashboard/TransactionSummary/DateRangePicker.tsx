@@ -6,9 +6,8 @@ import { TextField } from "@mui/material";
 import { Moment } from "moment";
 
 // TODO: Should move to a common component directory
-function DateRangePicker() {
-  const [startValue, setStartValue] = useState<Moment | null>(null);
-  const [endValue, setEndValue] = useState<Moment | null>(null);
+function DateRangePicker(props: DateRangePickerProps) {
+  const { onChange, startValue, endValue } = props;
 
   return (
     <LocalizationProvider
@@ -17,20 +16,26 @@ function DateRangePicker() {
     >
       <DesktopDatePicker
         label="From"
-        inputFormat="MM/DD/YYYY"
+        inputFormat="DD/MM/YYYY"
         value={startValue}
-        onChange={(newValue) => setStartValue(newValue)}
+        onChange={(newValue) => onChange(newValue, endValue)}
         renderInput={(params) => <TextField {...params} />}
       />
       <DesktopDatePicker
         label="To"
-        inputFormat="MM/DD/YYYY"
+        inputFormat="DD/MM/YYYY"
         value={endValue}
-        onChange={(newValue) => setEndValue(newValue)}
+        onChange={(newValue) => onChange(startValue, newValue)}
         renderInput={(params) => <TextField {...params} />}
       />
     </LocalizationProvider>
   );
 }
+
+type DateRangePickerProps = {
+  onChange: (start: Moment | null, end: Moment | null) => void;
+  startValue: Moment | null;
+  endValue: Moment | null;
+};
 
 export default DateRangePicker;

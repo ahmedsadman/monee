@@ -1,7 +1,22 @@
+import { useState } from "react";
 import { Card, CardContent, Typography } from "@mui/material";
+import { Moment } from "moment";
 import DateRangePicker from "./DateRangePicker";
+import useTransactionStatistics from "../../data-hooks/useTransactionStatistics";
 
 function TransactionSummary() {
+  const [startDate, setStartDate] = useState<Moment | null>(null);
+  const [endDate, setEndDate] = useState<Moment | null>(null);
+  const { statistics } = useTransactionStatistics(startDate, endDate);
+
+  const handleDateRangeChange = (
+    startDate: Moment | null,
+    endDate: Moment | null
+  ) => {
+    setStartDate(startDate);
+    setEndDate(endDate);
+  };
+
   return (
     <Card variant="outlined">
       <CardContent>
@@ -12,7 +27,11 @@ function TransactionSummary() {
         >
           Transaction Summary
         </Typography>
-        <DateRangePicker />
+        <DateRangePicker
+          onChange={handleDateRangeChange}
+          startValue={startDate}
+          endValue={endDate}
+        />
         <Card sx={{ mt: 3 }}>
           <CardContent>
             <Typography
@@ -23,7 +42,7 @@ function TransactionSummary() {
               Withdraw
             </Typography>
             <Typography variant="h5" component="div">
-              1200$
+              {statistics?.withdraw.sum || ""}
             </Typography>
           </CardContent>
         </Card>
@@ -37,7 +56,7 @@ function TransactionSummary() {
               Deposit
             </Typography>
             <Typography variant="h5" component="div">
-              2500$
+              {statistics?.deposit.sum || ""}
             </Typography>
           </CardContent>
         </Card>
