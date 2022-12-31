@@ -3,6 +3,7 @@ import { Card, CardContent, Typography } from "@mui/material";
 import { Moment } from "moment";
 import DateRangePicker from "./DateRangePicker";
 import useTransactionStatistics from "../../data-hooks/useTransactionStatistics";
+import { formatMoneyAmount } from "../../common/utils";
 
 function TransactionSummary() {
   const [startDate, setStartDate] = useState<Moment | null>(null);
@@ -42,7 +43,7 @@ function TransactionSummary() {
               Withdraw
             </Typography>
             <Typography variant="h5" component="div">
-              {statistics?.withdraw.sum || ""}
+              {formatMoneyAmount(statistics?.withdraw.sum)}
             </Typography>
           </CardContent>
         </Card>
@@ -56,7 +57,7 @@ function TransactionSummary() {
               Deposit
             </Typography>
             <Typography variant="h5" component="div">
-              {statistics?.deposit.sum || ""}
+              {formatMoneyAmount(statistics?.deposit.sum)}
             </Typography>
           </CardContent>
         </Card>
