@@ -18,7 +18,7 @@ function useTransactionStatistics(
 
     axios
       .get(
-        `http://localhost:8000/transactions/statistics?start_date=${startDateString}&end_date=${endDateString}`
+        `/api/transactions/statistics?start_date=${startDateString}&end_date=${endDateString}`
       )
       .then((res) => setStatistics(res.data));
   }, [startDate, endDate]);
