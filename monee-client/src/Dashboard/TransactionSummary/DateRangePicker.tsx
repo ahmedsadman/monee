@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
@@ -10,10 +9,7 @@ function DateRangePicker(props: DateRangePickerProps) {
   const { onChange, startValue, endValue } = props;
 
   return (
-    <LocalizationProvider
-      dateAdapter={AdapterMoment}
-      localeText={{ start: "Check-in", end: "Check-out" }}
-    >
+    <LocalizationProvider dateAdapter={AdapterMoment}>
       <DesktopDatePicker
         label="From"
         inputFormat="DD/MM/YYYY"
