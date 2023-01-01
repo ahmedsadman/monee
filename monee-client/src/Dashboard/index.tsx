@@ -1,7 +1,13 @@
 import TransactionSummary from "./TransactionSummary";
+import TransactionHistory from "./TransactionHistory";
 
 function Dashboard() {
-  return <TransactionSummary />;
+  return (
+    <>
+      <TransactionSummary />
+      <TransactionHistory />
+    </>
+  );
 }
 
 export default Dashboard;

@@ -53,6 +53,7 @@
     ]
   },
   "devDependencies": {
+    "@types/react-vis": "^1.11.11",
     "prettier": "2.8.1"
   }
 }
