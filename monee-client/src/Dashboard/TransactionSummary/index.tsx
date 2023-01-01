@@ -46,7 +46,7 @@ function TransactionSummary() {
   }, [rangePreset]);
 
   return (
-    <Card variant="outlined">
+    <Card>
       <CardContent>
         <Typography
           sx={{ fontSize: 14, pb: 3 }}
@@ -61,20 +61,20 @@ function TransactionSummary() {
           endValue={endDate}
         />
         <FormControl>
-          <InputLabel id="demo-simple-select-label">Range Presets</InputLabel>
+          <InputLabel>Range Presets</InputLabel>
           <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
             value={rangePreset.toString()}
             label="Range Presets"
             onChange={(e: SelectChangeEvent) => setRangePreset(e.target.value)}
           >
-            <MenuItem value="30">Last 30 days</MenuItem>
-            <MenuItem value="60">Last 60 days</MenuItem>
+            <MenuItem value="30">Last month</MenuItem>
+            <MenuItem value="90">Last 3 months</MenuItem>
+            <MenuItem value="180">Last 6 months</MenuItem>
+            <MenuItem value="365">Last year</MenuItem>
             <MenuItem value="_custom">Custom</MenuItem>
           </Select>
         </FormControl>
-        <Card sx={{ mt: 3 }}>
+        <Card sx={{ mt: 3 }} variant="outlined">
           <CardContent>
             <Typography
               sx={{ fontSize: 14, pb: 3 }}
@@ -88,7 +88,7 @@ function TransactionSummary() {
             </Typography>
           </CardContent>
         </Card>
-        <Card sx={{ mt: 3 }}>
+        <Card sx={{ mt: 3 }} variant="outlined">
           <CardContent>
             <Typography
               sx={{ fontSize: 14, pb: 3 }}
