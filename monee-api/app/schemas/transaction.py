@@ -51,9 +51,15 @@ class StatisticsMeta(BaseModel):
         return round(v, 2)
 
 
-class GroupedTransaction(StatisticsMeta):
+class GroupedTransactionDescription(StatisticsMeta):
     description: str
     type: TransactionType
+
+
+class GroupedTransactionMonth(StatisticsMeta):
+    type: TransactionType
+    year: int
+    month: int
 
 
 class Statistics(BaseModel):

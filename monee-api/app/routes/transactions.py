@@ -36,8 +36,8 @@ async def get_statistics(start_date: date | None = None, end_date: date | None =
     }
 
 
-@router.get('/grouped', response_model=list[schemas.GroupedTransaction])
-async def get_grouped_transactions(
+@router.get('/grouped/description', response_model=list[schemas.GroupedTransactionDescription])
+async def get_grouped_transactions_by_description(
                                     start_date: date | None = None, end_date: date | None = None,
                                     transaction_type: TransactionType | None = None
                                 ):
@@ -46,4 +46,17 @@ async def get_grouped_transactions(
         raise HTTPException(status_code=400, detail='Start date cannot be greater than end date')
 
     db_stats = await TransactionStorage.get_grouped_by_desciption(start_date, end_date, transaction_type)
+    return db_stats
+
+
+@router.get('/grouped/month', response_model=list[schemas.GroupedTransactionMonth])
+async def get_grouped_transactions_by_month(
+                                    start_date: date | None = None, end_date: date | None = None,
+                                    transaction_type: TransactionType | None = None
+                                ):
+
+    if start_date and end_date and start_date > end_date:
+        raise HTTPException(status_code=400, detail='Start date cannot be greater than end date')
+
+    db_stats = await TransactionStorage.get_grouped_by_month(start_date, end_date, transaction_type)
     return db_stats

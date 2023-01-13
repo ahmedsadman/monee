@@ -118,3 +118,29 @@ class TransactionStorage:
 
         results = await session().execute(stmt)
         return results.all()
+
+    @staticmethod
+    async def get_grouped_by_month(start_date: date | None, end_date: date | None,
+                                   transaction_type: TransactionType | None) -> list:
+
+        query_filters = TransactionStorage.get_date_filters(start_date, end_date)
+
+        if transaction_type:
+            query_filters.append(models.Transaction.type == transaction_type)
+
+        stmt = select(
+                    models.Transaction.type,
+                    func.year(models.Transaction.date),
+                    func.month(models.Transaction.date),
+                    func.sum(models.Transaction.amount), func.count(models.Transaction.amount)
+                ) \
+            .group_by(
+                    models.Transaction.type, 
+                    func.year(models.Transaction.date),
+                    func.month(models.Transaction.date),
+                ) \
+            .order_by(desc(func.sum(models.Transaction.amount))) \
+            .where(*query_filters)
+
+        results = await session().execute(stmt)
+        return results.all()

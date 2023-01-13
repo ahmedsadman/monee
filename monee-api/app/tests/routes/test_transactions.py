@@ -23,6 +23,7 @@ async def transactions():
     transactions_to_create = []
 
     for _date, amount in zip(dates, amounts):
+        # TODO: Improve the test set by adding deposits
         data = {
             'description': 'test-description',
             'amount': amount,
@@ -61,3 +62,8 @@ async def test_search_transactions(transactions):
     for record in res_json:
         assert record['date'] >= params['start_date']
         assert record['date'] <= params['end_date']
+
+
+async def test_get_grouped_by_month():
+    # SQLite (the test db) does not support func.year, need to find something equivalent
+    pass
