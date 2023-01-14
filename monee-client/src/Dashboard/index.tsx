@@ -1,11 +1,11 @@
 import TransactionSummary from "./TransactionSummary";
-import TransactionHistory from "./TransactionHistory";
+import GroupedTransactionCharts from "./GroupedTransactionCharts";
 
 function Dashboard() {
   return (
     <>
       <TransactionSummary />
-      <TransactionHistory />
+      <GroupedTransactionCharts />
     </>
   );
 }
