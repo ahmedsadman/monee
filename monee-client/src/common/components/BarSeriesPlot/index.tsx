@@ -1,5 +1,3 @@
-import { Box } from "@mui/material";
-
 import {
   VerticalGridLines,
   HorizontalGridLines,
@@ -9,7 +7,7 @@ import {
   FlexibleWidthXYPlot,
 } from "react-vis";
 import { PlotData } from "../../types";
-import ColorLegend from "./ColorLegendl";
+import ColorLegend from "./ColorLegend";
 
 function BarSeriesPlot({ series }: BarSeriesPlotProps) {
   return (
