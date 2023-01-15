@@ -12,10 +12,24 @@ import {
   Select,
 } from "@mui/material";
 
-function DateRangePicker({ onChange }: DateRangePickerProps) {
+export const defaultPresetOptions: PresetOption[] = [
+  { label: "Last month", value: "30", default: true },
+  { label: "Last 3 months", value: "90" },
+  { label: "Last 6 months", value: "180" },
+  { label: "Last year", value: "365" },
+];
+
+function DateRangePicker({ onChange, presetOptions }: DateRangePickerProps) {
+  const _presetOptions = [
+    ...(presetOptions || defaultPresetOptions),
+    { label: "Custom", value: "_custom" },
+  ];
+
   const [startDate, setStartDate] = useState<Moment | null>(null);
   const [endDate, setEndDate] = useState<Moment | null>(null);
-  const [rangePreset, setRangePreset] = useState<string>("30");
+  const [rangePreset, setRangePreset] = useState<string>(
+    _presetOptions.find((option) => option.default)!.value
+  );
 
   const handleDateRangeChange = useCallback(
     (startDate: Moment | null, endDate: Moment | null, isCustom?: boolean) => {
@@ -64,6 +78,7 @@ function DateRangePicker({ onChange }: DateRangePickerProps) {
           handleDateRangeChange(startDate, newToDate, true)
         }
         renderInput={(params) => <TextField {...params} />}
+        views={["year", "month"]}
       />
       <FormControl>
         <InputLabel>Range Presets</InputLabel>
@@ -72,11 +87,11 @@ function DateRangePicker({ onChange }: DateRangePickerProps) {
           label="Range Presets"
           onChange={(e: SelectChangeEvent) => setRangePreset(e.target.value)}
         >
-          <MenuItem value="30">Last month</MenuItem>
-          <MenuItem value="90">Last 3 months</MenuItem>
-          <MenuItem value="180">Last 6 months</MenuItem>
-          <MenuItem value="365">Last year</MenuItem>
-          <MenuItem value="_custom">Custom</MenuItem>
+          {_presetOptions.map((option) => (
+            <MenuItem value={option.value} key={option.label}>
+              {option.label}
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
     </LocalizationProvider>
@@ -85,6 +100,13 @@ function DateRangePicker({ onChange }: DateRangePickerProps) {
 
 type DateRangePickerProps = {
   onChange: (start: Moment | null, end: Moment | null) => void;
+  presetOptions?: PresetOption[];
+};
+
+type PresetOption = {
+  label: string;
+  value: string;
+  default?: boolean;
 };
 
 export default DateRangePicker;
