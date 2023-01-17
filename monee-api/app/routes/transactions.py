@@ -52,11 +52,10 @@ async def get_grouped_transactions_by_description(
 @router.get('/grouped/month', response_model=list[schemas.GroupedTransactionMonth])
 async def get_grouped_transactions_by_month(
                                     start_date: date | None = None, end_date: date | None = None,
-                                    transaction_type: TransactionType | None = None
                                 ):
 
     if start_date and end_date and start_date > end_date:
         raise HTTPException(status_code=400, detail='Start date cannot be greater than end date')
 
-    db_stats = await TransactionStorage.get_grouped_by_month(start_date, end_date, transaction_type)
+    db_stats = await TransactionStorage.get_grouped_by_month(start_date, end_date)
     return db_stats

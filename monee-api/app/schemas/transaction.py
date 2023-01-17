@@ -26,12 +26,8 @@ class TransactionCreate(ParsedTransaction):
         x = ' '.join(v.split())
         return x[:199]
 
-    @validator('amount')
+    @validator('amount', 'balance')
     def round_amount(cls, v):
-        return round(v, 2)
-
-    @validator('balance')
-    def round_balance(cls, v):
         return round(v, 2)
 
 
@@ -56,10 +52,16 @@ class GroupedTransactionDescription(StatisticsMeta):
     type: TransactionType
 
 
-class GroupedTransactionMonth(StatisticsMeta):
-    type: TransactionType
-    year: int
-    month: int
+class GroupedTransactionMonth(BaseModel):
+    withdraw: float
+    deposit: float
+    withdraw_count: int
+    deposit_count: int
+    date: str
+
+    @validator('withdraw', 'deposit')
+    def round_amount(cls, v):
+        return round(v, 2)
 
 
 class Statistics(BaseModel):

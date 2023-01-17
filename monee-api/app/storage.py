@@ -120,13 +120,9 @@ class TransactionStorage:
         return results.all()
 
     @staticmethod
-    async def get_grouped_by_month(start_date: date | None, end_date: date | None,
-                                   transaction_type: TransactionType | None) -> list:
+    async def get_grouped_by_month(start_date: date | None, end_date: date | None) -> list:
 
         query_filters = TransactionStorage.get_date_filters(start_date, end_date)
-
-        if transaction_type:
-            query_filters.append(models.Transaction.type == transaction_type)
 
         stmt = select(
                     models.Transaction.type,
@@ -135,7 +131,7 @@ class TransactionStorage:
                     func.sum(models.Transaction.amount), func.count(models.Transaction.amount)
                 ) \
             .group_by(
-                    models.Transaction.type, 
+                    models.Transaction.type,
                     func.year(models.Transaction.date),
                     func.month(models.Transaction.date),
                 ) \
@@ -143,4 +139,27 @@ class TransactionStorage:
             .where(*query_filters)
 
         results = await session().execute(stmt)
-        return results.all()
+
+        month_year_map = dict()
+
+        all_result = results.all()
+
+        for item in all_result:
+            _date = f'{item.year}-{item.month:02}'
+            withdraw_count_key = f'{TransactionType.WITHDRAW}_count'
+            deposit_count_key = f'{TransactionType.DEPOSIT}_count'
+
+            month_year_map.setdefault(_date, {
+                    'date': _date,
+                    TransactionType.WITHDRAW: 0,
+                    TransactionType.DEPOSIT: 0,
+                    withdraw_count_key: 0,
+                    deposit_count_key: 0,
+                }
+            )
+            month_year_map[_date][item.type] = item.sum  # item.type will always satisfy TransactionType Enum
+            month_year_map[_date][
+                withdraw_count_key if item.type == TransactionType.WITHDRAW else deposit_count_key
+            ] = item.count
+
+        return sorted([flattened_result for flattened_result in month_year_map.values()], key=lambda k: k['date'])
