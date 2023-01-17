@@ -8,10 +8,11 @@ export type Transaction = {
 };
 
 export type GroupedTransaction = {
-  sum: number;
-  type: string;
-  month: number;
-  year: number;
+  date: string;
+  withdraw: number;
+  deposit: number;
+  withdraw_count: number;
+  deposit_count: number;
 };
 
 export type PlotData = {

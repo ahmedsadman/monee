@@ -1,48 +1,50 @@
 import {
-  VerticalGridLines,
-  HorizontalGridLines,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
-  VerticalBarSeries,
-  FlexibleWidthXYPlot,
-} from "react-vis";
-import { PlotData } from "../../types";
-import ColorLegend from "./ColorLegend";
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
-function BarSeriesPlot({ series }: BarSeriesPlotProps) {
+function BarSeriesPlot({ data, barProps, xAxisKey }: BarSeriesPlotProps) {
   return (
-    <>
-      <ColorLegend items={series} />
-      <FlexibleWidthXYPlot
-        xType="ordinal"
-        height={300}
-        margin={{ left: 100, right: 100 }}
+    <ResponsiveContainer width="100%" height={400}>
+      <BarChart
+        width={1200}
+        height={400}
+        data={data}
+        margin={{
+          top: 5,
+          right: 20,
+          left: 20,
+          bottom: 5,
+        }}
       >
-        <VerticalGridLines />
-        <HorizontalGridLines />
-        <XAxis />
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey={xAxisKey} />
         <YAxis />
-        {series.map((plot) => (
-          <VerticalBarSeries
-            barWidth={0.8}
-            color={plot.color}
-            data={plot.data}
-            key={plot.title}
-          />
+        <Tooltip />
+        <Legend />
+        {barProps.map((bar) => (
+          <Bar dataKey={bar.dataKey} key={bar.dataKey} fill={bar.color} />
         ))}
-      </FlexibleWidthXYPlot>
-    </>
+      </BarChart>
+    </ResponsiveContainer>
   );
 }
 
-type Plot = {
-  title: string;
-  data: PlotData[];
+type BarProp = {
+  dataKey: string;
   color: string;
 };
 
 type BarSeriesPlotProps = {
-  series: Plot[];
+  data: object[]; // TODO: Fix this hacky way of using object[], make it specific
+  barProps: BarProp[];
+  xAxisKey: string;
 };
 
 export default BarSeriesPlot;

@@ -2,7 +2,6 @@ import { useCallback, useState } from "react";
 import { Moment } from "moment";
 import { Card, CardContent, Box, Typography } from "@mui/material";
 import useTransactionGroupByMonth from "../../data-hooks/useTransactionGroupByMonth";
-import { GroupedTransaction } from "../../common/types";
 import BarSeriesPlot from "../../common/components/BarSeriesPlot";
 import DateRangePicker, {
   defaultPresetOptions,
@@ -11,17 +10,10 @@ import DateRangePicker, {
 function GroupedTransactionCharts() {
   const [startDate, setStartDate] = useState<Moment | null>(null);
   const [endDate, setEndDate] = useState<Moment | null>(null);
-  const { groupedByMonthDeposits, groupedByMonthWithdrawls } =
-    useTransactionGroupByMonth(startDate, endDate);
+  const { groupedByMonth } = useTransactionGroupByMonth(startDate, endDate);
 
   const presetOptions = defaultPresetOptions.slice(1);
-  presetOptions[presetOptions.length - 1].default = true;
-
-  const getXYCoord = (data: GroupedTransaction[]) =>
-    data.map((item) => ({
-      x: `${item.year.toString().slice(2)}-${item.month}`,
-      y: item.sum,
-    }));
+  presetOptions[presetOptions.length - 2].default = true;
 
   const handleDateRangeChange = useCallback(
     (startDate: Moment | null, endDate: Moment | null) => {
@@ -30,6 +22,11 @@ function GroupedTransactionCharts() {
     },
     []
   );
+
+  const barProps = [
+    { dataKey: "deposit", color: "#82ca9d" },
+    { dataKey: "withdraw", color: "#8884d8" },
+  ];
 
   return (
     <Card sx={{ mt: 3 }}>
@@ -48,19 +45,11 @@ function GroupedTransactionCharts() {
           />
         </Box>
 
+        {/* TODO: Fix this hack of using object[] */}
         <BarSeriesPlot
-          series={[
-            {
-              title: "Deposit",
-              color: "#140F2D",
-              data: getXYCoord(groupedByMonthDeposits || []),
-            },
-            {
-              title: "Withdraw",
-              color: "#4464ad",
-              data: getXYCoord(groupedByMonthWithdrawls || []),
-            },
-          ]}
+          data={groupedByMonth as object[]}
+          barProps={barProps}
+          xAxisKey="date"
         />
       </CardContent>
     </Card>
