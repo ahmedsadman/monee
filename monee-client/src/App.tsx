@@ -1,6 +1,6 @@
 import { CssBaseline, Box } from "@mui/material";
 import { Outlet, useNavigate } from "react-router-dom";
-import SideDrawer from "./SideDrawer";
+import SideDrawer from "./pages/SideDrawer";
 
 function App() {
   const navigate = useNavigate();
