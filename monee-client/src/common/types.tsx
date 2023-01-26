@@ -7,12 +7,20 @@ export type Transaction = {
   date: string;
 };
 
+// TODO: Give more specific naming
 export type GroupedTransaction = {
   date: string;
   withdraw: number;
   deposit: number;
   withdraw_count: number;
   deposit_count: number;
+};
+
+export type GroupedTransactionDescription = {
+  description: string;
+  sum: string;
+  count: number;
+  type: "deposit" | "withdraw";
 };
 
 export type PlotData = {
