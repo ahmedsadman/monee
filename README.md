@@ -10,16 +10,30 @@ Repeat steps 1-3 according to your needs
 
 For parsing the statements, we need different parser configs as each bank statement is different in structure. For the lifetime of this project, I will only add parser configs for *Bangladeshi* banks. Feel free to modify it according to your needs. More on how to add parsers will come later as the project progresses.
 
-This is a *work-in-progress (WIP)*. Although this is a web app, it is meant to be used individually at least for the time being. After all, I am maknig this only for my personal use and thought it would be a good project to share. Or maybe I will make it a production grade application later having thousands of users, who knows?
+This is a *work-in-progress (WIP)*. Although this is a web app, it is meant to be used individually at least for the time being. After all, I am making this for my personal use and thought it would be a good project to share. Or maybe I will make it a production grade application later having thousands of users, who knows?
 
 ---
 
 # Motivation
-Firstly, I'm making this to learn FastAPI. I absolutely love FastAPI and it's going to be a really long time till I consider another framework for backend dev.
+Firstly, I'm making this to learn FastAPI. I am loving it.
 
 Secondly, I cannot use expense tracking apps properly. Most of the times, I forget adding the entries. Besides, it's incovenient to manually do this. So I thought, why not directly use bank statements? It's the single source of truth of my finance maintained by my bank(s). I know I wouldn't have granular description of each expense, but again, in most cases that's not what I'm looking for. Thus this project was born.
 
 Before you ask, No, the banks in my country are not good enough to provide APIs for user data consumption, let alone any advance kind of digitization.
+
+# Stack
+- Python
+- FastAPI
+- MySQL
+- React
+- Docker
+
+
+# How to use
+1. Run the containers using `docker-comopse up`
+2. Go to `localhost:5000` and create a bank account from the Accounts section.
+3. Upload the `.csv` version of your bank statement. Please note, many banks provide the statement in `.xlsx`/`.xls` format. For the time being, you have to use a conversion tool (plenty available online) to create `.csv` from it. In future, the conversion ability will be added within the app
+4. You should be able to see an analysis summary on your Dashboard
 
 
 # Development
