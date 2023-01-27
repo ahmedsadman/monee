@@ -1,6 +1,5 @@
 from datetime import date
 
-from fastapi import HTTPException
 from sqlalchemy import desc, func
 from sqlalchemy.future import select
 
@@ -8,31 +7,6 @@ from app import models, schemas
 from app.db import session
 from app.enums import TransactionType
 from app.utils import calculate_transaction_uid
-
-
-class AccountStorage:
-    @staticmethod
-    async def create_account(account: schemas.AccountCreate) -> models.Account:
-        db_account = models.Account(**account.dict())
-        session().add(db_account)
-        await session().flush()
-        await session().refresh(db_account)
-        return db_account
-
-    @staticmethod
-    async def list_all_accounts() -> list[models.Account]:
-        statement = select(models.Account)
-        accounts = await session().scalars(statement)
-        return accounts.all()
-
-    @staticmethod
-    async def get_by_id(id: int) -> models.Account:
-        account = await session().get(models.Account, id)
-
-        if not account:
-            raise HTTPException(status_code=404, detail="Account not found")
-
-        return account
 
 
 class TransactionStorage:
@@ -90,12 +64,14 @@ class TransactionStorage:
             .group_by(models.Transaction.type) \
             .where(*query_filters)
 
-        # session.execute returns all columns
-        # session.execute can be used for ORM instances, but need to add some more code to get the instance column.
-        # session.scalar returns a single column, the column value being the ORM instance
-        # session.scalar is useful when selecting only ORM entities. It's a convenient version of session.execute
-        # session.execute is required when we're dealing with non-ORM instances,
-        # like here we're using aggregate functions
+        '''
+        session.execute returns all columns
+        session.execute can be used for ORM instances, but need to add some more code to get the instance column.
+        session.scalar returns a single column, the column value being the ORM instance
+        session.scalar is useful when selecting only ORM entities. It's a convenient version of session.execute
+        session.execute is required when we're dealing with non-ORM instances,
+        like here we're using aggregate functions
+        '''
         results = await session().execute(stmt)
         return results.all()
 
