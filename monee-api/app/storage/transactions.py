@@ -7,21 +7,10 @@ from app import models, schemas
 from app.db import session
 from app.enums import TransactionType
 from app.utils import calculate_transaction_uid
+from app.storage.utils import FilterBuilder
 
 
 class TransactionStorage:
-    @staticmethod
-    def get_date_filters(start_date: date | None, end_date: date | None) -> list:
-        query_filters = []
-
-        if start_date:
-            query_filters.append(models.Transaction.date >= start_date)
-
-        if end_date:
-            query_filters.append(models.Transaction.date <= end_date)
-
-        return query_filters
-
     @staticmethod
     async def add_transactions(transactions: list[schemas.TransactionCreate]):
         to_add = []
@@ -47,18 +36,20 @@ class TransactionStorage:
             end_date: date | None,
             description: str | None
             ) -> list[models.Transaction]:
-        query_filters = TransactionStorage.get_date_filters(start_date, end_date)
+
+        query_filters = FilterBuilder(models.Transaction).add_date_filters(start_date, end_date).get()
 
         if description:
             query_filters.append(models.Transaction.description == description)
 
         statement = select(models.Transaction).where(*query_filters)
+
         results = await session().scalars(statement)
         return results.all()
 
     @staticmethod
     async def get_statistics(start_date: date | None, end_date: date | None) -> list:
-        query_filters = TransactionStorage.get_date_filters(start_date, end_date)
+        query_filters = FilterBuilder(models.Transaction).add_date_filters(start_date, end_date).get()
 
         stmt = select(func.sum(models.Transaction.amount), func.count(models.Transaction.amount)) \
             .group_by(models.Transaction.type) \
@@ -79,7 +70,7 @@ class TransactionStorage:
     async def get_grouped_by_desciption(start_date: date | None, end_date: date | None,
                                         transaction_type: TransactionType | None) -> list:
 
-        query_filters = TransactionStorage.get_date_filters(start_date, end_date)
+        query_filters = FilterBuilder(models.Transaction).add_date_filters(start_date, end_date).get()
 
         if transaction_type:
             query_filters.append(models.Transaction.type == transaction_type)
@@ -97,8 +88,7 @@ class TransactionStorage:
 
     @staticmethod
     async def get_grouped_by_month(start_date: date | None, end_date: date | None) -> list:
-
-        query_filters = TransactionStorage.get_date_filters(start_date, end_date)
+        query_filters = FilterBuilder(models.Transaction).add_date_filters(start_date, end_date).get()
 
         stmt = select(
                     models.Transaction.type,
