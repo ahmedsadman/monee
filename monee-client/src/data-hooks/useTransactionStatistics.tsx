@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Moment } from "moment";
 import { useEffect, useState } from "react";
+import { Statistics } from "../common/types";
 
 function useTransactionStatistics(
   startDate: Moment | null,
@@ -25,17 +26,5 @@ function useTransactionStatistics(
 
   return { statistics };
 }
-
-// TODO: Move to common types
-type Statistics = {
-  withdraw: {
-    sum: number;
-    count: number;
-  };
-  deposit: {
-    sum: number;
-    count: number;
-  };
-};
 
 export default useTransactionStatistics;

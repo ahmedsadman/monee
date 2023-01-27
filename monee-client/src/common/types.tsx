@@ -27,3 +27,14 @@ export type PlotData = {
   x: number | string;
   y: number;
 };
+
+export type Statistics = {
+  withdraw: {
+    sum: number;
+    count: number;
+  };
+  deposit: {
+    sum: number;
+    count: number;
+  };
+};

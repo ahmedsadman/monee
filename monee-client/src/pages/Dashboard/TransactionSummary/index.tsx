@@ -1,23 +1,8 @@
-import { useState, useCallback } from "react";
 import { Card, CardContent, Typography } from "@mui/material";
-import { Moment } from "moment";
-import DateRangePicker from "../../../common/components/DateRangePicker";
-import useTransactionStatistics from "../../../data-hooks/useTransactionStatistics";
 import { formatMoneyAmount } from "../../../common/utils";
+import { Statistics } from "../../../common/types";
 
-function TransactionSummary() {
-  const [startDate, setStartDate] = useState<Moment | null>(null);
-  const [endDate, setEndDate] = useState<Moment | null>(null);
-  const { statistics } = useTransactionStatistics(startDate, endDate);
-
-  const handleDateRangeChange = useCallback(
-    (startDate: Moment | null, endDate: Moment | null) => {
-      setStartDate(startDate);
-      setEndDate(endDate);
-    },
-    []
-  );
-
+function TransactionSummary({ statistics }: TransactionSummaryProps) {
   return (
     <Card>
       <CardContent>
@@ -28,7 +13,6 @@ function TransactionSummary() {
         >
           Transaction Summary
         </Typography>
-        <DateRangePicker onChange={handleDateRangeChange} />
         <Card sx={{ mt: 3 }} variant="outlined">
           <CardContent>
             <Typography
@@ -61,5 +45,9 @@ function TransactionSummary() {
     </Card>
   );
 }
+
+type TransactionSummaryProps = {
+  statistics: Statistics | undefined;
+};
 
 export default TransactionSummary;

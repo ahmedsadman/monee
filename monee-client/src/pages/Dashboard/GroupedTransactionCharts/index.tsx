@@ -1,28 +1,7 @@
-import { useCallback, useState } from "react";
-import { Moment } from "moment";
-import { Card, CardContent, Box, Typography } from "@mui/material";
-import useTransactionGroupByMonth from "../../../data-hooks/useTransactionGroupByMonth";
+import { Card, CardContent, Typography } from "@mui/material";
 import BarSeriesPlot from "../../../common/components/BarSeriesPlot";
-import DateRangePicker, {
-  defaultPresetOptions,
-} from "../../../common/components/DateRangePicker";
 
-function GroupedTransactionCharts() {
-  const [startDate, setStartDate] = useState<Moment | null>(null);
-  const [endDate, setEndDate] = useState<Moment | null>(null);
-  const { groupedByMonth } = useTransactionGroupByMonth(startDate, endDate);
-
-  const presetOptions = defaultPresetOptions.slice(1);
-  presetOptions[presetOptions.length - 2].default = true;
-
-  const handleDateRangeChange = useCallback(
-    (startDate: Moment | null, endDate: Moment | null) => {
-      setStartDate(startDate);
-      setEndDate(endDate);
-    },
-    []
-  );
-
+function GroupedTransactionCharts({ data }: Props) {
   const barProps = [
     { dataKey: "deposit", color: "#82ca9d" },
     { dataKey: "withdraw", color: "#8884d8" },
@@ -38,22 +17,14 @@ function GroupedTransactionCharts() {
         >
           Withdraw/Deposit by month
         </Typography>
-        <Box sx={{ mb: 3, ml: 3 }}>
-          <DateRangePicker
-            onChange={handleDateRangeChange}
-            presetOptions={presetOptions}
-          />
-        </Box>
-
-        {/* TODO: Fix this hack of using object[] */}
-        <BarSeriesPlot
-          data={groupedByMonth as object[]}
-          barProps={barProps}
-          xAxisKey="date"
-        />
+        <BarSeriesPlot data={data} barProps={barProps} xAxisKey="date" />
       </CardContent>
     </Card>
   );
 }
+
+type Props = {
+  data: object[]; // TODO: Fix this hack of using object[]
+};
 
 export default GroupedTransactionCharts;

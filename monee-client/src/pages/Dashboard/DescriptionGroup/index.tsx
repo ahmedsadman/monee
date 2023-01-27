@@ -1,10 +1,7 @@
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { Card, CardContent, Box, Typography } from "@mui/material";
-import useTransactionGroupByDescription from "../../../data-hooks/useTransactionGroupByDescription";
 import { GroupedTransactionDescription } from "../../../common/types";
 import Table from "../../../common/components/Table";
-import { Moment } from "moment";
-import DateRangePicker from "../../../common/components/DateRangePicker";
 
 const columns = [
   { id: "name", label: "Name" },
@@ -12,22 +9,7 @@ const columns = [
   { id: "amount", label: "Amount" },
 ];
 
-function DescriptionGroup() {
-  const [startDate, setStartDate] = useState<Moment | null>(null);
-  const [endDate, setEndDate] = useState<Moment | null>(null);
-  const { deposits, withdrawls } = useTransactionGroupByDescription(
-    startDate,
-    endDate
-  );
-
-  const handleDateRangeChange = useCallback(
-    (startDate: Moment | null, endDate: Moment | null) => {
-      setStartDate(startDate);
-      setEndDate(endDate);
-    },
-    []
-  );
-
+function DescriptionGroup({ withdrawls, deposits }: Props) {
   const mapToTable = useCallback(
     (data: GroupedTransactionDescription[]) =>
       data.map((item) => {
@@ -47,9 +29,6 @@ function DescriptionGroup() {
         >
           Transaction by name
         </Typography>
-        <Box sx={{ mb: 3 }}>
-          <DateRangePicker onChange={handleDateRangeChange} />
-        </Box>
         <Box sx={{ display: "flex", flexDirection: "row" }}>
           <Box sx={{ mr: 3, flex: 1 }}>
             <Typography sx={{ fontSize: 18, pb: 1 }} color="text.primary">
@@ -69,5 +48,10 @@ function DescriptionGroup() {
     </Card>
   );
 }
+
+type Props = {
+  withdrawls: GroupedTransactionDescription[];
+  deposits: GroupedTransactionDescription[];
+};
 
 export default DescriptionGroup;
