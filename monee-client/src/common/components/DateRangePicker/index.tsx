@@ -13,9 +13,9 @@ import {
 } from "@mui/material";
 
 export const defaultPresetOptions: PresetOption[] = [
-  { label: "Last month", value: "30", default: true },
+  { label: "Last month", value: "30" },
   { label: "Last 3 months", value: "90" },
-  { label: "Last 6 months", value: "180" },
+  { label: "Last 6 months", value: "180", default: true },
   { label: "Last year", value: "365" },
   { label: "Last 3 years", value: "1095" },
 ];
