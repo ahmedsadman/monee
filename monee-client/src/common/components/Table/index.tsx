@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Table as MUITable,
   TableContainer,
@@ -13,16 +13,25 @@ function Table({ columns, rows }: TableProps) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  function handlePageChange(e: unknown, newPage: number) {
+  const handlePageChange = useCallback((e: unknown, newPage: number) => {
     setPage(newPage);
-  }
+  }, []);
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRowsPerPage(+event.target.value);
+  const handleChangeRowsPerPage = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setRowsPerPage(+event.target.value);
+      setPage(0);
+    },
+    []
+  );
+
+  const resetPage = useCallback(() => {
     setPage(0);
-  };
+  }, []);
+
+  useEffect(() => {
+    resetPage();
+  }, [rows, columns, resetPage]);
 
   return (
     <>
