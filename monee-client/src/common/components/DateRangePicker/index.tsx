@@ -79,7 +79,6 @@ function DateRangePicker({ onChange, presetOptions }: DateRangePickerProps) {
           handleDateRangeChange(startDate, newToDate, true)
         }
         renderInput={(params) => <TextField {...params} />}
-        views={["year", "month"]}
       />
       <FormControl>
         <InputLabel>Range Presets</InputLabel>
