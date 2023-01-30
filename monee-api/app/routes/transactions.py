@@ -16,11 +16,12 @@ router = APIRouter(
 async def search_transactions(
         start_date: date | None = None,
         end_date: date | None = None,
-        description: str | None = None
+        query: str | None = None,
+        offset: int = 0, limit: int = 10
         ):
     if start_date and end_date and start_date > end_date:
         raise HTTPException(status_code=400, detail='Start date cannot be greater than end date')
-    return await TransactionStorage.search_transactions(start_date, end_date, description)
+    return await TransactionStorage.search_transactions(start_date, end_date, query, offset, limit)
 
 
 @router.get('/statistics', response_model=schemas.Statistics)
@@ -39,13 +40,16 @@ async def get_statistics(start_date: date | None = None, end_date: date | None =
 @router.get('/grouped/description', response_model=list[schemas.GroupedTransactionDescription])
 async def get_grouped_transactions_by_description(
                                     start_date: date | None = None, end_date: date | None = None,
-                                    transaction_type: TransactionType | None = None
+                                    transaction_type: TransactionType | None = None,
+                                    query: str | None = None,
+                                    offset: int = 0, limit: int = 10
                                 ):
 
     if start_date and end_date and start_date > end_date:
         raise HTTPException(status_code=400, detail='Start date cannot be greater than end date')
 
-    db_stats = await TransactionStorage.get_grouped_by_desciption(start_date, end_date, transaction_type)
+    db_stats = await TransactionStorage.get_grouped_by_desciption(start_date, end_date,
+                                                                  transaction_type, query, offset, limit)
     return db_stats
 
 

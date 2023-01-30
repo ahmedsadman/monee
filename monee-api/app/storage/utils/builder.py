@@ -16,5 +16,15 @@ class FilterBuilder:
 
         return self
 
+    def add_search_query(self, field: str, query: str | None):
+        if not query:
+            return self
+
+        self.query_filters.append(
+            getattr(self.model, field).like(f'%{query}%')
+        )
+
+        return self
+
     def get(self):
         return self.query_filters
