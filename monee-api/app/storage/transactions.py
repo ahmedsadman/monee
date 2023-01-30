@@ -34,7 +34,8 @@ class TransactionStorage:
     async def search_transactions(
             start_date: date | None,
             end_date: date | None,
-            description: str | None
+            description: str | None,
+            offset: int = 0, limit: int = 50
             ) -> list[models.Transaction]:
 
         query_filters = FilterBuilder(models.Transaction).add_date_filters(start_date, end_date).get()
@@ -42,7 +43,7 @@ class TransactionStorage:
         if description:
             query_filters.append(models.Transaction.description == description)
 
-        statement = select(models.Transaction).where(*query_filters)
+        statement = select(models.Transaction).where(*query_filters).offset(offset).limit(limit)
 
         results = await session().scalars(statement)
         return results.all()
@@ -68,7 +69,8 @@ class TransactionStorage:
 
     @staticmethod
     async def get_grouped_by_desciption(start_date: date | None, end_date: date | None,
-                                        transaction_type: TransactionType | None) -> list:
+                                        transaction_type: TransactionType | None,
+                                        offset: int = 0, limit: int = 50) -> list:
 
         query_filters = FilterBuilder(models.Transaction).add_date_filters(start_date, end_date).get()
 
@@ -81,7 +83,7 @@ class TransactionStorage:
                 ) \
             .group_by(models.Transaction.description, models.Transaction.type) \
             .order_by(desc(func.sum(models.Transaction.amount))) \
-            .where(*query_filters)
+            .where(*query_filters).offset(offset).limit(limit)
 
         results = await session().execute(stmt)
         return results.all()
