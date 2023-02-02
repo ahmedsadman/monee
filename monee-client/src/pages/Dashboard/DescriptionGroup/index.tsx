@@ -9,7 +9,7 @@ const columns = [
   { id: "amount", label: "Amount" },
 ];
 
-function DescriptionGroup({ withdrawls, deposits }: Props) {
+function DescriptionGroup({ withdrawls, deposits, resultLimit }: Props) {
   const mapToTable = useCallback(
     (data: GroupedTransactionDescription[]) =>
       data.map((item) => {
@@ -27,7 +27,7 @@ function DescriptionGroup({ withdrawls, deposits }: Props) {
           color="text.secondary"
           gutterBottom
         >
-          Transaction by name
+          {`Transaction by name (Top ${resultLimit})`}
         </Typography>
         <Box sx={{ display: "flex", flexDirection: "row" }}>
           <Box sx={{ mr: 3, flex: 1 }}>
@@ -52,6 +52,7 @@ function DescriptionGroup({ withdrawls, deposits }: Props) {
 type Props = {
   withdrawls: GroupedTransactionDescription[];
   deposits: GroupedTransactionDescription[];
+  resultLimit: number | string;
 };
 
 export default DescriptionGroup;

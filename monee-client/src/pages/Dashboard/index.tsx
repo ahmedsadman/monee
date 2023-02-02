@@ -11,13 +11,20 @@ import useTransactionStatistics from "../../data-hooks/useTransactionStatistics"
 import useTransactionGroupByMonth from "../../data-hooks/useTransactionGroupByMonth";
 import useTransactionGroupByDescription from "../../data-hooks/useTransactionGroupByDescription";
 
+const DESCRIPION_GROUP_LIMIT = 100;
+
 function Dashboard() {
   const [startDate, setStartDate] = useState<Moment | null>(null);
   const [endDate, setEndDate] = useState<Moment | null>(null);
 
   const { statistics } = useTransactionStatistics(startDate, endDate);
   const { groupedByMonth } = useTransactionGroupByMonth(startDate, endDate);
-  const descriptionGroup = useTransactionGroupByDescription(startDate, endDate);
+  const descriptionGroup = useTransactionGroupByDescription(
+    startDate,
+    endDate,
+    0,
+    DESCRIPION_GROUP_LIMIT
+  );
 
   const handleDateRangeChange = useCallback(
     (startDate: Moment | null, endDate: Moment | null) => {
@@ -43,6 +50,7 @@ function Dashboard() {
       <DescriptionGroup
         withdrawls={descriptionGroup.withdrawls || []}
         deposits={descriptionGroup.deposits || []}
+        resultLimit={DESCRIPION_GROUP_LIMIT}
       />
     </>
   );
