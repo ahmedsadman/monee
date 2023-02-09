@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import Dashboard from "./pages/Dashboard";
+import Transactions from "./pages/Transactions";
 import reportWebVitals from "./reportWebVitals";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -26,7 +27,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/transactions",
-        element: <div>Transactions</div>,
+        element: <Transactions />,
       },
       {
         path: "/accounts",
