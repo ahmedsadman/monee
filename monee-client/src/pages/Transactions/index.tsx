@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { Moment } from "moment";
-import { Card, CardContent, Typography } from "@mui/material";
+import { Card, CardContent, Typography, TextField } from "@mui/material";
 import DateRangePicker from "../../common/components/DateRangePicker";
 import useTransactions from "../../data-hooks/useTransactions";
 import Table from "../../common/components/Table";
@@ -18,10 +18,12 @@ function Transactions() {
   const [startDate, setStartDate] = useState<Moment | null>(null);
   const [endDate, setEndDate] = useState<Moment | null>(null);
   const [offset, setOffset] = useState(0);
+  const [query, setQuery] = useState<string>(""); // TODO: Add debounce to request
 
   const { transactions, count } = useTransactions(
     startDate,
     endDate,
+    query,
     offset,
     RESULT_LIMIT
   );
@@ -49,6 +51,13 @@ function Transactions() {
         >
           Transactions
         </Typography>
+        <TextField
+          sx={{ mr: 3 }}
+          variant="outlined"
+          placeholder="Search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
         <DateRangePicker onChange={handleDateRangeChange} />
         <Table
           columns={columns}

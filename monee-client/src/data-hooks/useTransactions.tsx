@@ -5,6 +5,7 @@ import { Moment } from "moment";
 function useTransactions(
   startDate: Moment | null,
   endDate: Moment | null,
+  query: string = "",
   offset: number = 0,
   limit: number = 100
 ) {
@@ -24,13 +25,14 @@ function useTransactions(
       end_date: endDateString,
       offset,
       limit,
+      query,
     };
 
     axios.get("/api/transactions/search", { params }).then((res) => {
       setTransactions(res.data.results);
       setCount(res.data.count);
     });
-  }, [startDate, endDate, offset, limit]);
+  }, [startDate, endDate, query, offset, limit]);
 
   return { transactions, count };
 }
