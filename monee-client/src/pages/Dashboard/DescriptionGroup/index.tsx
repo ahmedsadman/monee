@@ -34,14 +34,22 @@ function DescriptionGroup({ withdrawls, deposits, resultLimit }: Props) {
             <Typography sx={{ fontSize: 18, pb: 1 }} color="text.primary">
               Deposits
             </Typography>
-            <Table columns={columns} rows={mapToTable(deposits || [])} />
+            <Table
+              columns={columns}
+              rows={mapToTable(deposits || [])}
+              identityKey="name"
+            />
           </Box>
 
           <Box sx={{ ml: 3, flex: 1 }}>
             <Typography sx={{ fontSize: 18, pb: 1 }} color="text.primary">
               Withdrawls
             </Typography>
-            <Table columns={columns} rows={mapToTable(withdrawls || [])} />
+            <Table
+              columns={columns}
+              rows={mapToTable(withdrawls || [])}
+              identityKey="name" // TODO: Description is not unique sometimes
+            />
           </Box>
         </Box>
       </CardContent>

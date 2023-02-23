@@ -9,20 +9,33 @@ import {
   TablePagination,
 } from "@mui/material";
 
-function Table({ columns, rows }: TableProps) {
+function Table({
+  columns,
+  rows,
+  count,
+  identityKey,
+  onPageChange,
+  lazyLoad = false,
+  pageSize = 25,
+}: TableProps) {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(pageSize);
 
-  const handlePageChange = useCallback((e: unknown, newPage: number) => {
-    setPage(newPage);
-  }, []);
+  const handlePageChange = useCallback(
+    (e: unknown, newPage: number) => {
+      setPage(newPage);
+      onPageChange?.(newPage);
+    },
+    [onPageChange]
+  );
 
   const handleChangeRowsPerPage = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setRowsPerPage(+event.target.value);
       setPage(0);
+      onPageChange?.(0);
     },
-    []
+    [onPageChange]
   );
 
   const resetPage = useCallback(() => {
@@ -30,8 +43,14 @@ function Table({ columns, rows }: TableProps) {
   }, []);
 
   useEffect(() => {
-    resetPage();
-  }, [rows, columns, resetPage]);
+    if (!lazyLoad) {
+      resetPage();
+    }
+  }, [lazyLoad, resetPage]);
+
+  const _rows = lazyLoad
+    ? rows
+    : rows?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
     <>
@@ -51,29 +70,32 @@ function Table({ columns, rows }: TableProps) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
-              ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align="left">
-                          {value}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
+            {_rows.map((row) => {
+              return (
+                <TableRow
+                  hover
+                  role="checkbox"
+                  tabIndex={-1}
+                  key={row[identityKey]}
+                >
+                  {columns.map((column) => {
+                    const value = row[column.id];
+                    return (
+                      <TableCell key={column.id} align="left">
+                        {value}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
           </TableBody>
         </MUITable>
       </TableContainer>
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
-        count={rows.length}
+        count={count ? count : rows.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handlePageChange}
@@ -96,6 +118,11 @@ type Row = {
 type TableProps = {
   columns: Column[];
   rows: Row[];
+  identityKey: string;
+  lazyLoad?: boolean;
+  count?: number;
+  pageSize?: number;
+  onPageChange?: (pageNo: number) => void;
 };
 
 export default Table;
