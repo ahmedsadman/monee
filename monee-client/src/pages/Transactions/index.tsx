@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Moment } from "moment";
-import { Box, Card, CardContent, Typography } from "@mui/material";
+import { Card, CardContent, Typography } from "@mui/material";
 import DateRangePicker from "../../common/components/DateRangePicker";
 import useTransactions from "../../data-hooks/useTransactions";
 import Table from "../../common/components/Table";
@@ -12,11 +12,19 @@ const columns = [
   { id: "date", label: "Date" },
 ];
 
+const RESULT_LIMIT = 25;
+
 function Transactions() {
   const [startDate, setStartDate] = useState<Moment | null>(null);
   const [endDate, setEndDate] = useState<Moment | null>(null);
+  const [offset, setOffset] = useState(0);
 
-  const { transactions } = useTransactions(startDate, endDate, 0, 100);
+  const { transactions, count } = useTransactions(
+    startDate,
+    endDate,
+    offset,
+    RESULT_LIMIT
+  );
 
   const handleDateRangeChange = useCallback(
     (startDate: Moment | null, endDate: Moment | null) => {
@@ -26,9 +34,10 @@ function Transactions() {
     []
   );
 
-  useEffect(() => {
-    console.log("transactions are", transactions);
-  }, [transactions]);
+  const handlePageChange = useCallback((pageNo: number) => {
+    const newOffset = pageNo * RESULT_LIMIT;
+    setOffset(newOffset);
+  }, []);
 
   return (
     <Card>
@@ -41,7 +50,16 @@ function Transactions() {
           Transactions
         </Typography>
         <DateRangePicker onChange={handleDateRangeChange} />
-        <Table columns={columns} rows={transactions} />
+        <Table
+          columns={columns}
+          rows={transactions}
+          count={count}
+          identityKey="id"
+          lazyLoad
+          height={800}
+          pageSize={RESULT_LIMIT}
+          onPageChange={handlePageChange}
+        />
       </CardContent>
     </Card>
   );

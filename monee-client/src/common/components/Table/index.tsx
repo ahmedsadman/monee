@@ -16,6 +16,7 @@ function Table({
   identityKey,
   onPageChange,
   lazyLoad = false,
+  height = 450,
   pageSize = 25,
 }: TableProps) {
   const [page, setPage] = useState(0);
@@ -54,7 +55,7 @@ function Table({
 
   return (
     <>
-      <TableContainer sx={{ height: 450 }}>
+      <TableContainer sx={{ height }}>
         <MUITable stickyHeader>
           <TableHead>
             <TableRow>
@@ -120,6 +121,7 @@ type TableProps = {
   rows: Row[];
   identityKey: string;
   lazyLoad?: boolean;
+  height?: number | null;
   count?: number;
   pageSize?: number;
   onPageChange?: (pageNo: number) => void;

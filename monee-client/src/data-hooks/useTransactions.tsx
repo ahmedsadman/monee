@@ -9,6 +9,7 @@ function useTransactions(
   limit: number = 100
 ) {
   const [transactions, setTransactions] = useState([]);
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     if (!startDate || !endDate) {
@@ -25,12 +26,13 @@ function useTransactions(
       limit,
     };
 
-    axios
-      .get("/api/transactions/search", { params })
-      .then((res) => setTransactions(res.data));
+    axios.get("/api/transactions/search", { params }).then((res) => {
+      setTransactions(res.data.results);
+      setCount(res.data.count);
+    });
   }, [startDate, endDate, offset, limit]);
 
-  return { transactions };
+  return { transactions, count };
 }
 
 export default useTransactions;
