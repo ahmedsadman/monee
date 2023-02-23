@@ -5,5 +5,6 @@ from .transaction import (
     ParsedTransaction,
     Statistics,
     Transaction,
-    TransactionCreate
+    TransactionCreate,
+    TransactionSearch
 )

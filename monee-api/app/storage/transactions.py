@@ -36,17 +36,21 @@ class TransactionStorage:
             end_date: date | None,
             query: str | None,
             offset: int = 0, limit: int = 50
-            ) -> list[models.Transaction]:
+            ) -> tuple[list[models.Transaction], int]:
 
         query_filters = FilterBuilder(models.Transaction) \
             .add_date_filters(start_date, end_date) \
             .add_search_query('description', query) \
             .get()
 
-        statement = select(models.Transaction).where(*query_filters).offset(offset).limit(limit)
+        main_query = select(models.Transaction).where(*query_filters)
+        count = await session().scalar(
+            select(func.count()).select_from(main_query)
+        )
+        statement = main_query.offset(offset).limit(limit)
 
         results = await session().scalars(statement)
-        return results.all()
+        return (results.all(), count)
 
     @staticmethod
     async def get_statistics(start_date: date | None, end_date: date | None) -> list:

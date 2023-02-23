@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 
-@router.get('/search', response_model=list[schemas.Transaction])
+@router.get('/search', response_model=schemas.TransactionSearch)
 async def search_transactions(
         start_date: date | None = None,
         end_date: date | None = None,
@@ -21,7 +21,12 @@ async def search_transactions(
         ):
     if start_date and end_date and start_date > end_date:
         raise HTTPException(status_code=400, detail='Start date cannot be greater than end date')
-    return await TransactionStorage.search_transactions(start_date, end_date, query, offset, limit)
+    result = await TransactionStorage.search_transactions(start_date, end_date, query, offset, limit)
+
+    return {
+        'count': result[1],
+        'results': result[0]
+    }
 
 
 @router.get('/statistics', response_model=schemas.Statistics)

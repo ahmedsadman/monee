@@ -64,6 +64,11 @@ class GroupedTransactionMonth(BaseModel):
         return round(v, 2)
 
 
+class TransactionSearch(BaseModel):
+    results: list[Transaction]
+    count: int
+
+
 class Statistics(BaseModel):
     withdraw: StatisticsMeta
     deposit: StatisticsMeta
