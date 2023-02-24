@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   Select,
   InputLabel,
@@ -12,9 +12,25 @@ import Modal from "../../../common/components/Modal";
 import useAccounts from "../../../data-hooks/useAccounts";
 
 function UploadStatementModal({ show, onClose }: ModalProps) {
-  const { accounts } = useAccounts();
-  const [selectedAccount, setSelectedAccount] = useState<string>();
+  const { accounts, uploadStatement } = useAccounts();
+  const [selectedAccount, setSelectedAccount] = useState<number | undefined>();
   const [selectedFile, setSelectedFile] = useState<File | undefined>();
+  const [loading, setLoading] = useState(false);
+
+  const handleStatementUpload = useCallback(async () => {
+    if (!selectedAccount || !selectedFile) {
+      return;
+    }
+
+    setLoading(true);
+    await uploadStatement(selectedAccount, selectedFile);
+    setLoading(false);
+    onClose();
+  }, [selectedAccount, onClose, selectedFile, uploadStatement]);
+
+  useEffect(() => {
+    setSelectedAccount(accounts?.[0]?.id);
+  }, [accounts]);
 
   return (
     <Modal show={show} onClose={onClose}>
@@ -23,13 +39,13 @@ function UploadStatementModal({ show, onClose }: ModalProps) {
           <InputLabel>Account</InputLabel>
           <Select
             label="Account"
-            value={selectedAccount || accounts?.[0]?.bank_identifier || ""}
-            onChange={(e) => setSelectedAccount(e.target.value)}
+            value={selectedAccount || ""}
+            onChange={(e) => setSelectedAccount(Number(e.target.value))}
           >
             {accounts.map((account) => (
               <MenuItem
-                value={account.bank_identifier}
-                key={account.id}
+                value={account.id.toString()}
+                key={account.id.toString()}
               >{`${account.title} - ${account.bank_identifier}`}</MenuItem>
             ))}
           </Select>
@@ -46,10 +62,15 @@ function UploadStatementModal({ show, onClose }: ModalProps) {
             mt: 2,
           }}
         >
-          <Button variant="contained" sx={{ mr: 1 }} disabled={!selectedFile}>
+          <Button
+            variant="contained"
+            sx={{ mr: 1 }}
+            disabled={!selectedFile || loading}
+            onClick={handleStatementUpload}
+          >
             Done
           </Button>
-          <Button variant="outlined" onClick={onClose}>
+          <Button variant="outlined" onClick={onClose} disabled={loading}>
             Cancel
           </Button>
         </Box>
