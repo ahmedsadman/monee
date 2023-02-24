@@ -38,3 +38,9 @@ export type Statistics = {
     count: number;
   };
 };
+
+export type Account = {
+  id: number;
+  bank_identifier: string;
+  title: string;
+};
