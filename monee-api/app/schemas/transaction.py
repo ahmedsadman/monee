@@ -14,13 +14,6 @@ class TransactionBase(BaseModel):
 
 
 class ParsedTransaction(TransactionBase):
-    pass
-
-
-class TransactionCreate(ParsedTransaction):
-    uid: str
-    account_id: int
-
     @validator('description')
     def truncate_description(cls, v):
         x = ' '.join(v.split())
@@ -29,6 +22,11 @@ class TransactionCreate(ParsedTransaction):
     @validator('amount', 'balance')
     def round_amount(cls, v):
         return round(v, 2)
+
+
+class TransactionCreate(ParsedTransaction):
+    uid: str
+    account_id: int
 
 
 class Transaction(TransactionCreate):

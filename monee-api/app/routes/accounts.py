@@ -42,10 +42,9 @@ async def upload_statement(account_id: int, file: UploadFile):
                             for transaction in parsed_transactions
                     ]
         await TransactionStorage.add_transactions(transactions)
+        return {'message': 'OK'}
     except Exception as e:
         print(e)
-        return {'message': 'An error occured'}
+        return {'message': 'An error occured'}, 400
     finally:
         saved_file.unlink()
-
-    return {'message': 'OK'}
