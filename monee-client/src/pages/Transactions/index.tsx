@@ -1,8 +1,17 @@
 import { useCallback, useState } from "react";
 import { Moment } from "moment";
-import { Card, CardContent, Typography, TextField } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Tabs,
+  Tab,
+  Typography,
+  TextField,
+} from "@mui/material";
 import DateRangePicker from "../../common/components/DateRangePicker";
+import DescriptionGroup from "../Dashboard/DescriptionGroup";
 import useTransactions from "../../data-hooks/useTransactions";
+import useTransactionGroupByDescription from "../../data-hooks/useTransactionGroupByDescription";
 import Table from "../../common/components/Table";
 
 const columns = [
@@ -19,12 +28,20 @@ function Transactions() {
   const [endDate, setEndDate] = useState<Moment | null>(null);
   const [offset, setOffset] = useState(0);
   const [query, setQuery] = useState<string>(""); // TODO: Add debounce to request
+  const [tab, setTab] = useState<Number>(0);
 
   const { transactions, count } = useTransactions(
     startDate,
     endDate,
     query,
     offset,
+    RESULT_LIMIT
+  );
+
+  const descriptionGroup = useTransactionGroupByDescription(
+    startDate,
+    endDate,
+    0,
     RESULT_LIMIT
   );
 
@@ -39,6 +56,10 @@ function Transactions() {
   const handlePageChange = useCallback((pageNo: number) => {
     const newOffset = pageNo * RESULT_LIMIT;
     setOffset(newOffset);
+  }, []);
+
+  const handleTabChange = useCallback((tabNo: Number) => {
+    setTab(tabNo);
   }, []);
 
   return (
@@ -59,16 +80,35 @@ function Transactions() {
           onChange={(e) => setQuery(e.target.value)}
         />
         <DateRangePicker onChange={handleDateRangeChange} />
-        <Table
-          columns={columns}
-          rows={transactions}
-          count={count}
-          identityKey="id"
-          lazyLoad
-          height={800}
-          pageSize={RESULT_LIMIT}
-          onPageChange={handlePageChange}
-        />
+        <Tabs
+          sx={{ mt: 3, mb: 1 }}
+          value={tab}
+          onChange={(e, tabNo) => handleTabChange(tabNo)}
+        >
+          <Tab label="All" />
+          <Tab label="By Description" />
+        </Tabs>
+
+        {tab === 0 && (
+          <Table
+            columns={columns}
+            rows={transactions}
+            count={count}
+            identityKey="id"
+            lazyLoad
+            height={800}
+            pageSize={RESULT_LIMIT}
+            onPageChange={handlePageChange}
+          />
+        )}
+
+        {tab === 1 && (
+          <DescriptionGroup
+            withdrawls={descriptionGroup.withdrawls || []}
+            deposits={descriptionGroup.deposits || []}
+            resultLimit={RESULT_LIMIT}
+          />
+        )}
       </CardContent>
     </Card>
   );
