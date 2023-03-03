@@ -7,6 +7,7 @@ import { GroupedTransactionDescription } from "../common/types";
 function useTransactionGroupByDescription(
   startDate: Moment | null,
   endDate: Moment | null,
+  query: string = "",
   offset: number = 0,
   limit: number = 25
 ) {
@@ -28,6 +29,7 @@ function useTransactionGroupByDescription(
     const params = {
       start_date: startDate.format("YYYY-MM-DD"),
       end_date: endDate.format("YYYY-MM-DD"),
+      query,
       limit,
       offset,
     };
@@ -60,7 +62,7 @@ function useTransactionGroupByDescription(
           )
         );
       });
-  }, [startDate, endDate, offset, limit]);
+  }, [startDate, endDate, offset, limit, query]);
 
   useEffect(() => {
     fetchGroupedByDescription();

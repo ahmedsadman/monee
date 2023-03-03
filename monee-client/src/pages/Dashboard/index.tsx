@@ -24,6 +24,7 @@ function Dashboard() {
   const descriptionGroup = useTransactionGroupByDescription(
     startDate,
     endDate,
+    "",
     0,
     DESCRIPION_GROUP_LIMIT
   );

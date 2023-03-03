@@ -41,6 +41,7 @@ function Transactions() {
   const descriptionGroup = useTransactionGroupByDescription(
     startDate,
     endDate,
+    query,
     0,
     RESULT_LIMIT
   );
@@ -102,6 +103,8 @@ function Transactions() {
           />
         )}
 
+        {/* Currently, withdrawls and deposits in total return 25 results
+        TODO: Withdrawls and deposits each of them should return 25 results */}
         {tab === 1 && (
           <DescriptionGroup
             withdrawls={descriptionGroup.withdrawls || []}
